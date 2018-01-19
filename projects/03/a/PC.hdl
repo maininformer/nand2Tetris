@@ -16,5 +16,18 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+     Inc16(in=previousout, out=incremented);
+     
+     // must always increment first so if there are 
+     // multiple 1 flags it does not load and then add
+     // or reset and then add, but rather add and then
+     // load or reset
+
+     Mux16(a=previousout, b=incremented, sel=inc, out=incin);
+     Mux16(a=incin, b=in[0..15], sel=load, out=incloadin);
+     Mux16(a=incloadin, b=false, sel=reset, out=newin);
+     Or(a=reset, b=load, out=resetload);
+     Or(a=inc, b=resetload, out=acceptin);
+     Register(in=newin, load=acceptin, out=previousout, out=out[0..15]);
+
 }
