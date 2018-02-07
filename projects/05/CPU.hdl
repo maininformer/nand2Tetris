@@ -39,5 +39,68 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+
+    Mux16(a=instruction, b=outALU, sel=instruction[15], out=inA);
+
+    // A-Register
+    // Load A in two conditions:
+    // hitostu: The destination is A: instruction[5]
+    // futatsu: This is an address: instruction[15]
+    Not(in=instruction[15], out=isAddress);
+    Or(a=instruction[5], b=isAddress, out=loadA);
+    ARegister(in=inA, load=loadA, out=outA, out[0..14]=addressM, out=inPC);
+    
+    // D-Register
+    // Load in D if the destination is D: instruction[4], and it is 
+    // a C instruction
+    And(a=instruction[15], b=instruction[4], out=loadD);
+    DRegister(in=inD, load=loadD, out=outD);
+
+    // the `a` mnemonic will choose if y is A or M
+    Mux16(a=outA, b=inM, sel=instruction[12], out=outAorM);
+
+    //PC
+    // To jump means to load the A into PC, for that three conditions
+    // should be met: hitotsu: The j bits need to be one, futatsu:
+    // the ALU output should agree with the j bits, mittsu: This is a C instruction
+
+    // strictly negative
+    And(a=instruction[2], b=isNeg, out=negJump);
+    // strinctly zero
+    And(a=instruction[1], b=isZero, out=zeroJump);
+    // strictly posistive: not zero AND not negative    
+    Or(a=isNeg, b=isZero, out=temp2);
+    Not(in=temp2, out=isPos);
+    And(a=instruction[0], b=isPos, out=posJump);
+
+    // assert the jump?
+    Or(a=negJump, b=zeroJump, out=temp3);
+    Or(a=temp3, b=posJump, out=tempJump);
+    // must be a C instruction
+    And(a=tempJump, b=instruction[15], out=jump);
+    // if not jump then increment
+    Not(in=jump, out=increment);
+
+    PC(in=inPC, load=jump, inc=increment, reset=reset, out[0..14]=pc);
+
+    // The instructions for CPU are almost one to one with what the 
+    // ALU can do
+    ALU(
+      x=outD, 
+      y=outAorM, 
+      zx=instruction[11], 
+      nx=instruction[10], 
+      zy=instruction[9], 
+      ny=instruction[8], 
+      f=instruction[7], 
+      no=instruction[6], 
+      out=outM, 
+      out=inD,
+      out=outALU, 
+      zr=isZero, 
+      ng=isNeg
+  );
+
+  // write if this is a computation and desitnation is M
+  And(a=instruction[15], b=instruction[3], out=writeM);
 }
