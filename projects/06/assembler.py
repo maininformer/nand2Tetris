@@ -58,12 +58,13 @@ class Code(object):
     @staticmethod
     def dest(mnemonic):
         return_value = ['0', '0', '0']
-        if 'M' in mnemonic:
-            return_value[2] = '1'
-        if 'A' in mnemonic:
-            return_value[0] = '1'
-        if 'D' in mnemonic:
-            return_value[1] = '1'
+        if mnemonic and len(mnemonic) > 0 :
+            if 'M' in mnemonic:
+                return_value[2] = '1'
+            if 'A' in mnemonic:
+                return_value[0] = '1'
+            if 'D' in mnemonic:
+                return_value[1] = '1'
         return ''.join(return_value)
     @staticmethod
     def comp(mnemonic):
@@ -127,7 +128,8 @@ if __name__ == '__main__':
     for line in p.lines:
         p.set_next_command(line)
         if p.command_type in ['A_COMMAND', 'L_COMMAND']:
-            output.append(p.current_command + '\n')
+            symbol = p.symbol()
+            output.append(bin(int(symbol))[2:].zfill(16) + '\n')
         elif p.command_type == 'C_COMMAND':
             result_to_output = '111'
             result_to_output += Code.comp(p.comp())
