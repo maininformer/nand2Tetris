@@ -1,5 +1,19 @@
 import argparse
 
+SYMBOL_TABLE = {
+    'SP': 0,
+    'LCL': 1,
+    'ARG': 2,
+    'THIS': 3,
+    'THAT': 4,
+    'SCREEN': 16384,
+    'KBD': 24576,
+}
+
+LABELS = []
+temp = {'R{}'.format(i):i for i in range(16)}
+SYMBOL_TABLE.update(temp)
+
 class Parser(object):
     def __init__(self, filename):
        self.file_obj = open(filename, 'rb')
@@ -42,15 +56,23 @@ class Parser(object):
             # if the ';' was not found, set it to the last char
             ending = self.current_command.find(';')
             if ending == -1:
-                return self.current_command[beginning:]
+                ending_2 = self.current_command.find('//')
+                if ending_2 == -1:
+                    return self.current_command[beginning:]
+                else:
+                    return self.current_command[beginning:ending_2].strip()
             else:
                 return self.current_command[beginning:ending]
 
     def jump(self):
         if self.command_type == 'C_COMMAND':
             semi_colon = self.current_command.find(';')
+            ending = self.current_command.find('//')
             if semi_colon != -1:
-                return self.current_command[semi_colon+1:]
+                if ending == -1:
+                    return self.current_command[semi_colon+1:]
+                else:
+                    return self.current_command[semi_colon+1:ending].strip()
             else:
                 return None
 
@@ -125,11 +147,44 @@ output_filename = args.address[filename_beginning: filename_ending]
 if __name__ == '__main__':
     output = []
     p = Parser(args.address)
+    pc = 0
     for line in p.lines:
         p.set_next_command(line)
-        if p.command_type in ['A_COMMAND', 'L_COMMAND']:
+        if p.command_type == 'L_COMMAND':
+            # Mark and create a ROM
+            # The A-register also holds the instruction
+            # memory address; thus loading that instruction number
+            # into A before a jump will cause a pointer to the instruction memory
+            SYMBOL_TABLE[p.symbol()] = pc
+            LABELS.append(p.symbol())
+        if p.command_type in ['A_COMMAND', 'C_COMMAND']:
+            pc += 1
+
+    for line in p.lines:
+        p.set_next_command(line)
+        if p.command_type == 'A_COMMAND':
             symbol = p.symbol()
-            output.append(bin(int(symbol))[2:].zfill(16) + '\n')
+            try:
+                # try and cast the symbol into int and then binary
+                output.append(bin(int(symbol))[2:].zfill(16) + '\n')
+            except ValueError:
+                # if fails, then see if the stirng is in the table and if
+                # so return the address
+                if symbol in SYMBOL_TABLE:
+                    output.append(bin(SYMBOL_TABLE[symbol])[2:].zfill(16) + '\n')
+                # else check the empty addresses and initiate one starting at 16, returning the address
+                else:
+                    # only look at occupied RAM addresses and not instructions
+                    occupied_addresses = []
+                    for var in SYMBOL_TABLE:
+                        if var not in LABELS:
+                            occupied_addresses.append(SYMBOL_TABLE[var])
+                    for address in range(16, 16384):
+                        if address not in occupied_addresses:
+                            SYMBOL_TABLE[symbol] = address
+                            output.append(bin(SYMBOL_TABLE[symbol])[2:].zfill(16) + '\n')
+                            break
+
         elif p.command_type == 'C_COMMAND':
             result_to_output = '111'
             result_to_output += Code.comp(p.comp())
