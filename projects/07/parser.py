@@ -5,7 +5,7 @@ class Parser(object):
 
     def has_more_lines(self):
         try:
-            # prob the next line, and reset if
+            # probe the next line, and reset if
             # there is one
             last_pos = self.file_object.tell()
             self.file_object.readline()
