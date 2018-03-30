@@ -51,7 +51,7 @@ class Parser(object):
             if command == 'goto':
                 self.current_command = 'C_GOTO'
                 return self.current_command
-            if command.find('if') == 0:
+            if command == 'if-goto':
                 self.current_command = 'C_IF'
                 return self.current_command
             if command == 'function':
