@@ -1,18 +1,18 @@
 class Parser(object):
     def __init__(self, filename):
         self.file_object = open(filename, 'rb')
-        self.current_line = self.file_object.next()
+        self.current_line = None
+        self.current_command = None
 
     def has_more_lines(self):
-        try:
-            # probe the next line, and reset if
-            # there is one
-            last_pos = self.file_object.tell()
-            self.file_object.readline()
-            self.file_object.seek(last_post)
-            return True
-        except StopIteration:
+        # probe the next line, and reset if
+        # there is one
+        last_pos = self.file_object.tell()
+        read = self.file_object.readline()
+        if read == '':
             return False
+        self.file_object.seek(last_pos)
+        return True
 
     def advance(self):
         line = self.file_object.readline()
@@ -20,7 +20,7 @@ class Parser(object):
         comment_start = line.find('//')
         if comment_start != -1:
             line = line[:comment_start]
-        self.current_line = line
+        self.current_line = line.strip()
     def command_type(self):
         ARITHMETICS = [
             'add',
@@ -68,7 +68,9 @@ class Parser(object):
             return self.current_line.split()[0]
         if self.current_command == 'C_RETURN':
             return None
-        return self.current_line.split()[1]
+        elements = self.current_line.split()
+        if len(elements) > 1:
+            return elements[1]
 
     def arg_2(self):
         ALLOWED = [
