@@ -18,5 +18,9 @@ if __name__ == '__main__':
         if command in ['C_PUSH', 'C_POP']:
             c.write_push_pop(command, arg_1, arg_2)
 
+        if command == 'C_ARITHMETIC':
+            c.write_arithmetic(arg_1)
+
+    c.close()
 
 
