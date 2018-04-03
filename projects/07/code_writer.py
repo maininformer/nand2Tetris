@@ -16,13 +16,230 @@ class CodeWriter(object):
                 // I decided not to clean up the stack to zero
                 // cause I don't think that is necessary
 
-                @SP  // decrease the stack pointe
+                @SP  // decrease the stack pointer
                 M=M-1
 
                 A=M  // go to the next number
                 D=D+M // add
 
                 M=D  // put it back in the stack
+
+                @SP
+                M=M+1
+            """
+        if command == 'sub':
+            assembly = """
+                ///////
+                //SUB//
+                //////
+                @SP  // get the stack
+                M=M-1 // the current stack position is empty
+                A=M  // go to the top of the stack
+
+                D=-M  // save that number
+
+                // I decided not to clean up the stack to zero
+                // cause I don't think that is necessary
+
+                @SP  // decrease the stack pointer
+                M=M-1
+
+                A=M  // go to the next number
+                D=D+M // add
+
+                M=D  // put it back in the stack
+
+                @SP
+                M=M+1
+            """
+        if command == 'neg':
+            assembly = """
+                ///////
+                //NEG//
+                //////
+                @SP  // get the stack
+                M=M-1 // the current stack position is empty
+                A=M  // go to the top of the stack
+
+                M=-M  // save that number
+
+                @SP
+                M=M+1
+            """
+        if command == 'eq':
+            assembly = """
+                ///////
+                //EQ//
+                //////
+                @SP  // get the stack
+                M=M-1 // the current stack position is empty
+                A=M  // go to the top of the stack
+
+                D=M  // save that number
+
+                // I decided not to clean up the stack to zero
+                // cause I don't think that is necessary
+
+                @SP  // decrease the stack pointer
+                M=M-1
+                A=M  // go to the next number
+
+                D=D-M
+                @TRUE
+                D;JEQ
+                @SP  // return false
+                A=M
+                M=0
+                @END
+                0;JMP
+
+                (TRUE)
+                  @SP  // return true
+                  A=M
+                  M=-1
+                  @END
+                  0;JMP
+
+                (END)
+                  @SP
+                  M=M+1
+            """
+        if command == 'gt':
+            assembly = """
+                ///////
+                //GT//
+                //////
+                @SP  // get the stack
+                M=M-1 // the current stack position is empty
+                A=M  // go to the top of the stack
+
+                D=M  // save that number
+
+                // I decided not to clean up the stack to zero
+                // cause I don't think that is necessary
+
+                @SP  // decrease the stack pointer
+                M=M-1
+                A=M  // go to the next number
+
+                D=D-M
+                @TRUE
+                D;JLT
+                @SP  // return false
+                A=M
+                M=0
+                @END
+                0;JMP
+
+                (TRUE)
+                  @SP  // return true
+                  A=M
+                  M=-1
+                  @END
+                  0;JMP
+
+                (END)
+                  @SP
+                  M=M+1
+            """
+        if command == 'lt':
+            assembly = """
+                ///////
+                //LT//
+                //////
+                @SP  // get the stack
+                M=M-1 // the current stack position is empty
+                A=M  // go to the top of the stack
+
+                D=M  // save that number
+
+                // I decided not to clean up the stack to zero
+                // cause I don't think that is necessary
+
+                @SP  // decrease the stack pointer
+                M=M-1
+                A=M  // go to the next number
+
+                D=D-M
+                @TRUE
+                D;JGT
+                @SP  // return false
+                A=M
+                M=0
+                @END
+                0;JMP
+
+                (TRUE)
+                  @SP  // return true
+                  A=M
+                  M=-1
+                  @END
+                  0;JMP
+
+                (END)
+                  @SP
+                  M=M+1
+            """
+        if command == 'and':
+            assembly = """
+                ///////
+                //AND//
+                //////
+                @SP  // get the stack
+                M=M-1 // the current stack position is empty
+                A=M  // go to the top of the stack
+
+                D=M  // save that number
+
+                // I decided not to clean up the stack to zero
+                // cause I don't think that is necessary
+
+                @SP  // decrease the stack pointer
+                M=M-1
+
+                A=M  // go to the next number
+                D=D&M
+
+                M=D  // put it back in the stack
+
+                @SP
+                M=M+1
+            """
+        if command == 'or':
+            assembly = """
+                ///////
+                //OR//
+                //////
+                @SP  // get the stack
+                M=M-1 // the current stack position is empty
+                A=M  // go to the top of the stack
+
+                D=M  // save that number
+
+                // I decided not to clean up the stack to zero
+                // cause I don't think that is necessary
+
+                @SP  // decrease the stack pointer
+                M=M-1
+
+                A=M  // go to the next number
+                D=D|M
+
+                M=D  // put it back in the stack
+
+                @SP
+                M=M+1
+            """
+        if command == 'neg':
+            assembly = """
+                ///////
+                //NOT//
+                //////
+                @SP  // get the stack
+                M=M-1 // the current stack position is empty
+                A=M  // go to the top of the stack
+
+                M=!M  // save that number
 
                 @SP
                 M=M+1
