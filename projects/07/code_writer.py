@@ -253,8 +253,17 @@ class CodeWriter(object):
 
 
     def write_push_pop(self, command, segment, index):
+        def number(segment):
+            pass
         SEGMENT_MAPPING = {
-            'constant': 'SP'
+            'constant': 'SP',
+            'local': 'LCL',
+            'argument': 'ARG',
+            'this': 'THIS',
+            'that': 'THAT',
+            'temp': 'NOT',
+            'static': 'NOT',
+            'pointer': 'NOT'
         }
         assembly = ''
         if command == 'C_PUSH':
@@ -262,17 +271,40 @@ class CodeWriter(object):
             //////////
             // PUSH //
             //////////
-            @{0} // get the number to be pushed
-            D=A  // save it
+        """
+            # get the value to be pushed
+            if segment == 'constant':
+                assembly += """
+            @{}
+            D=A
+                """.format(index)
+            else:
+                assembly += """
+            @{0}  // get the offset
+            D=A
+            @{1}  // get the memory
+            A=A+D // go to the index
+            D=M   // get the value
+                """.format(index, SEGMENT_MAPPING[segment])
 
-            @{1}  // get the memory base pointer
+            assembly +="""
+            @SP  // get the stack
             A=M   // go to that address
 
             M=D   // save the value
 
-            @{1}
+            @SP
             M=M+1  // increase the stack pointer
-        """.format(index, SEGMENT_MAPPING[segment])
+        """
+
+        if command == 'C_POP':
+            assembly="""
+            ///////
+            //POP//
+            ///////
+
+
+        """
 
         self.file_object.write(assembly)
 

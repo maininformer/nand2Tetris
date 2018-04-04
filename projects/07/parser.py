@@ -42,8 +42,8 @@ class Parser(object):
             if command == 'push':
                 self.current_command = 'C_PUSH'
                 return self.current_command
-            if command == 'pull':
-                self.current_command = 'C_PULL'
+            if command == 'pop':
+                self.current_command = 'C_POP'
                 return self.current_command
             if command == 'label':
                 self.current_command = 'C_LABEL'
