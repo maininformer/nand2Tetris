@@ -2,8 +2,9 @@ from pdb import set_trace as br
 from parser import Parser
 from code_writer import CodeWriter
 
-FILENAME = 'SimpleAdd'
-BASE = '/Users/plum/Desktop/nand2tetris/projects/07/StackArithmetic/SimpleAdd/'
+# TODO: make this command line arguments
+FILENAME = 'StackTest'
+BASE = '/Users/plum/Desktop/nand2tetris/projects/07/StackArithmetic/StackTest/'
 READ_ADDRESS = '{0}{1}.vm'.format(BASE, FILENAME)
 WRITE_ADDRESS = '{0}{1}.asm'.format(BASE, FILENAME)
 
