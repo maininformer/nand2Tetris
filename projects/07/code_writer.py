@@ -281,7 +281,7 @@ class CodeWriter(object):
             @{0}  // get the offset
             D=A
             @{1}  // get the memory
-            A=A+D // go to the index
+            A=M+D // go to the index
             D=M   // get the value
                 """.format(index, SEGMENT_MAPPING[segment])
 
@@ -304,7 +304,7 @@ class CodeWriter(object):
             @{0}  // get the offset
             D=A
             @{1}  // get the memory
-            D=A+D // save the address
+            D=M+D // save the address
 
             @R13
             M=D   // put the address in a general register
