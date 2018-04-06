@@ -259,7 +259,7 @@ class CodeWriter(object):
             'argument': 'ARG',
             'this': 'THIS',
             'that': 'THAT',
-            'temp': 'NOT',
+            'temp': 'R5',
             'static': 'NOT',
             'pointer': 'NOT'
         }
