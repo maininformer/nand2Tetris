@@ -253,8 +253,6 @@ class CodeWriter(object):
 
 
     def write_push_pop(self, command, segment, index):
-        def number(segment):
-            pass
         SEGMENT_MAPPING = {
             'constant': 'SP',
             'local': 'LCL',
@@ -303,8 +301,24 @@ class CodeWriter(object):
             //POP//
             ///////
 
+            @{0}  // get the offset
+            D=A
+            @{1}  // get the memory
+            D=A+D // save the address
 
-        """
+            @R13
+            M=D   // put the address in temp
+
+            @SP   // get the stack
+            M=M-1 // decreas the stack pointer
+            A=M   // go to that address
+
+            D=M   // save the value
+
+            @R13
+            A=M   // go to the saved address
+            M=D   // put the stack value there
+            """.format(index, SEGMENT_MAPPING[segment])
 
         self.file_object.write(assembly)
 
