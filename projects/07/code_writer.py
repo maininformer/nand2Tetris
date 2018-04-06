@@ -307,7 +307,7 @@ class CodeWriter(object):
             D=A+D // save the address
 
             @R13
-            M=D   // put the address in temp
+            M=D   // put the address in a general register
 
             @SP   // get the stack
             M=M-1 // decreas the stack pointer
@@ -319,6 +319,7 @@ class CodeWriter(object):
             A=M   // go to the saved address
             M=D   // put the stack value there
             """.format(index, SEGMENT_MAPPING[segment])
+
 
         self.file_object.write(assembly)
 
