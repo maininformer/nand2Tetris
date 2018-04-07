@@ -259,7 +259,6 @@ class CodeWriter(object):
             'argument': 'ARG',
             'this': 'THIS',
             'that': 'THAT',
-            'temp': 'R5',
             'static': 'NOT',
             'pointer': 'NOT'
         }
@@ -276,6 +275,21 @@ class CodeWriter(object):
             @{}
             D=A
                 """.format(index)
+            elif segment == 'temp':
+                TEMP_MAPPING = {
+                    0: 5,
+                    1: 6,
+                    2: 7,
+                    3: 8,
+                    4: 9,
+                    5: 10,
+                    6: 11,
+                    7: 12
+                }
+                assembly += """
+            @R{}
+            D=M
+            """.format(TEMP_MAPPING[int(index)])
             else:
                 assembly += """
             @{0}  // get the offset
@@ -300,7 +314,33 @@ class CodeWriter(object):
             ///////
             //POP//
             ///////
+            """
+            if segment == 'temp':
+                TEMP_MAPPING = {
+                    0: 5,
+                    1: 6,
+                    2: 7,
+                    3: 8,
+                    4: 9,
+                    5: 10,
+                    6: 11,
+                    7: 12
+                }
+                assembly += """
+            @SP   // get the stack
+            M=M-1 // decreas the stack pointer
+            A=M   // go to that address
 
+            D=M   // save the value
+
+            @R{}
+            A=M   // go to the saved address
+            M=D   // put the stack value there
+            """.format(TEMP_MAPPING[int(index)])
+
+
+            else:
+                assembly += """
             @{0}  // get the offset
             D=A
             @{1}  // get the memory
