@@ -334,7 +334,6 @@ class CodeWriter(object):
             D=M   // save the value
 
             @R{}
-            A=M   // go to the saved address
             M=D   // put the stack value there
             """.format(TEMP_MAPPING[int(index)])
 
