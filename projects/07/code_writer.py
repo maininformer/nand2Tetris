@@ -260,7 +260,6 @@ class CodeWriter(object):
             'this': 'THIS',
             'that': 'THAT',
             'static': 'NOT',
-            'pointer': 'NOT'
         }
         assembly = ''
         if command == 'C_PUSH':
@@ -290,6 +289,17 @@ class CodeWriter(object):
             @R{}
             D=M
             """.format(TEMP_MAPPING[int(index)])
+
+            elif segment == 'pointer':
+                POINTER_MAPPING = {
+                    0: 'THIS',
+                    1: 'THAT'
+                }
+                assembly="""
+            @{}
+            D=M
+            """.format(POINTER_MAPPING[int(index)])
+
             else:
                 assembly += """
             @{0}  // get the offset
@@ -298,6 +308,7 @@ class CodeWriter(object):
             A=M+D // go to the index
             D=M   // get the value
                 """.format(index, SEGMENT_MAPPING[segment])
+
 
             assembly +="""
             @SP  // get the stack
@@ -337,6 +348,21 @@ class CodeWriter(object):
             M=D   // put the stack value there
             """.format(TEMP_MAPPING[int(index)])
 
+            elif segment == 'pointer':
+                POINTER_MAPPING = {
+                   0: 'THIS',
+                   1: 'THAT'
+                }
+                assembly += """
+            @SP   // get the stack
+            M=M-1 // decreas the stack pointer
+            A=M   // go to that address
+
+            D=M   // save the value
+
+            @{}
+            M=D   // put the stack value there
+            """.format(POINTER_MAPPING[int(index)])
 
             else:
                 assembly += """
