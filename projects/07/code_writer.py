@@ -290,6 +290,13 @@ class CodeWriter(object):
             D=M
             """.format(TEMP_MAPPING[int(index)])
 
+            elif segment == 'static':
+                address = 16 + int(index)
+                assembly += """
+            @{}
+            D=M
+            """.format(address)
+
             elif segment == 'pointer':
                 POINTER_MAPPING = {
                     0: 'THIS',
@@ -347,6 +354,19 @@ class CodeWriter(object):
             @R{}
             M=D   // put the stack value there
             """.format(TEMP_MAPPING[int(index)])
+
+            elif segment == 'static':
+                address = 16 + int(index)
+                assembly += """
+            @SP   // get the stack
+            M=M-1 // decreas the stack pointer
+            A=M   // go to that address
+
+            D=M   // save the value
+
+            @{}
+            M=D   // put the stack value there
+            """.format(address)
 
             elif segment == 'pointer':
                 POINTER_MAPPING = {

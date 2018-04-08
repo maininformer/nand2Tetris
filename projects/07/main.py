@@ -3,8 +3,8 @@ from parser import Parser
 from code_writer import CodeWriter
 
 # TODO: make this command line arguments
-FILENAME = 'PointerTest'
-BASE = '/Users/plum/Desktop/nand2tetris/projects/07/MemoryAccess/PointerTest/'
+FILENAME = 'StaticTest'
+BASE = '/Users/plum/Desktop/nand2tetris/projects/07/MemoryAccess/StaticTest/'
 READ_ADDRESS = '{0}{1}.vm'.format(BASE, FILENAME)
 WRITE_ADDRESS = '{0}{1}.asm'.format(BASE, FILENAME)
 
