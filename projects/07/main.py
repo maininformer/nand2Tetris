@@ -3,8 +3,8 @@ from parser import Parser
 from code_writer import CodeWriter
 
 # TODO: make this command line arguments
-FILENAME = 'StaticTest'
-BASE = '/Users/plum/Desktop/nand2tetris/projects/07/MemoryAccess/StaticTest/'
+FILENAME = 'BasicLoop'
+BASE = '/Users/plum/Desktop/codes/nand2tetris/projects/08/ProgramFlow/BasicLoop/'
 READ_ADDRESS = '{0}{1}.vm'.format(BASE, FILENAME)
 WRITE_ADDRESS = '{0}{1}.asm'.format(BASE, FILENAME)
 
@@ -21,6 +21,15 @@ if __name__ == '__main__':
 
         if command == 'C_ARITHMETIC':
             c.write_arithmetic(arg_1)
+
+        if command == 'C_GOTO':
+            c.write_goto(arg_1)
+
+        if command == 'C_IF':
+            c.write_if(arg_1)
+
+        if command == 'C_LABEL':
+            c.write_label(arg_1)
 
     c.close()
 

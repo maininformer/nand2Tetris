@@ -3,6 +3,9 @@ class CodeWriter(object):
         self.file_object = open(filename, 'wb')
         self.counter = 0
 
+    def write_init():
+        pass
+
     def write_arithmetic(self, command):
         assembly = ''
         self.counter += 1
@@ -407,6 +410,40 @@ class CodeWriter(object):
 
 
         self.file_object.write(assembly)
+
+    def write_label(self, label):
+        self.file_object.write(
+        """({})""".format(label)
+        )
+
+    def write_goto(self,label):
+        self.file_object.write("""
+        @{}    // load the label address and jump to it
+        0;JMP
+        """.format(label)
+        )
+
+    def write_if(self, label):
+       self.file_object.write("""
+       @SP    // get the stack
+       M=M-1  // decrease the pointer
+       A=M    // go to that address
+
+       D=M    // save the value
+
+       @{}    // load the label address
+       D;JNE  // jump if D is not equal to zero
+       """.format(label)
+       )
+
+    def write_call(function_name, num_args):
+        pass
+
+    def write_return():
+        pass
+
+    def write_function(function_name, num_locals):
+        pass
 
     def close(self):
         self.file_object.write("""
