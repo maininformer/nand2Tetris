@@ -63,6 +63,7 @@ class Parser(object):
             if command == 'call':
                 self.current_command = 'C_CALL'
                 return self.current_command
+        self.current_command = None
     def arg_1(self):
         if self.current_command == 'C_ARITHMETIC':
             return self.current_line.split()[0]

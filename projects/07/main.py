@@ -3,8 +3,8 @@ from parser import Parser
 from code_writer import CodeWriter
 
 # TODO: make this command line arguments
-FILENAME = 'BasicLoop'
-BASE = '/Users/plum/Desktop/codes/nand2tetris/projects/08/ProgramFlow/BasicLoop/'
+FILENAME = 'FibonacciSeries'
+BASE = '/Users/plum/Desktop/codes/nand2tetris/projects/08/ProgramFlow/FibonacciSeries/'
 READ_ADDRESS = '{0}{1}.vm'.format(BASE, FILENAME)
 WRITE_ADDRESS = '{0}{1}.asm'.format(BASE, FILENAME)
 
