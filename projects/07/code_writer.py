@@ -3,8 +3,13 @@ class CodeWriter(object):
         self.file_object = open(filename, 'wb')
         self.counter = 0
 
-    def write_init():
-        pass
+    def write_init(self):
+       assembly="""
+       @SP
+       M=256  // initialize the stack
+       call Sys.init 0
+       """
+       self.file_object.write(assembly)
 
     def write_arithmetic(self, command):
         assembly = ''
@@ -439,11 +444,76 @@ class CodeWriter(object):
     def write_call(function_name, num_args):
         pass
 
-    def write_return():
-        pass
+    def write_return(self):
+        assembly="""
+        @5
+        D=A
+        @LCL
+        A=M-D // go to the return
+        D=M   // save the return address in R13
+        @R13
+        M=D
 
-    def write_function(function_name, num_locals):
-        pass
+        // put the top of the stack in arg 0 which will be the top of the stack for the caller
+        @SP   // get the stack
+        M=M-1 // decrease the stack pointer
+        A=M   // go to that address
+
+        D=M   // save the value
+
+        @ARG // go to ARG
+        A=M   // go to the saved address
+        M=D   // put the stack value there
+
+        @ARG
+        D=M
+        @SP
+        M=D+1   // reposition the stack
+
+        @LCL    // restore THAT
+        A=M-1
+        D=M
+        @THAT
+        M=D
+
+        @2
+        D=A
+        @LCL    // restore THIS
+        A=M-D
+        D=M
+        @THIS
+        M=D
+
+        @3
+        D=A
+        @LCL    // restore ARG
+        A=M-D
+        D=M
+        @ARG
+        M=D
+
+        @4
+        D=A
+        @LCL    // restore LCL
+        A=M-D
+        D=M
+        @LCL
+        M=D
+
+        @R13    // go to the saved RET
+        A=M
+        """
+        self.file_object.write(assembly)
+
+    def write_function(self, function_name, num_locals):
+        assembly="""
+        ({0})
+        """.format(function_name)
+
+        self.file_object.write(assembly)
+        for i in range(int(num_locals)): # initialize all local vars to zero
+            self.write_push_pop('C_PUSH', 'constant', 0)
+            self.write_push_pop('C_POP', 'local', i)
 
     def close(self):
         self.file_object.write("""

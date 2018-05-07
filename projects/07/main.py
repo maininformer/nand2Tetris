@@ -3,14 +3,16 @@ from parser import Parser
 from code_writer import CodeWriter
 
 # TODO: make this command line arguments
-FILENAME = 'FibonacciSeries'
-BASE = '/Users/plum/Desktop/codes/nand2tetris/projects/08/ProgramFlow/FibonacciSeries/'
+FILENAME = 'SimpleFunction'
+BASE = '/Users/plum/Desktop/codes/nand2tetris/projects/08/FunctionCalls/SimpleFunction/'
 READ_ADDRESS = '{0}{1}.vm'.format(BASE, FILENAME)
 WRITE_ADDRESS = '{0}{1}.asm'.format(BASE, FILENAME)
 
 if __name__ == '__main__':
     p = Parser(READ_ADDRESS)
     c = CodeWriter(WRITE_ADDRESS)
+
+    # c.writeInit()
     while p.has_more_lines():
         p.advance()
         command = p.command_type()
@@ -30,6 +32,15 @@ if __name__ == '__main__':
 
         if command == 'C_LABEL':
             c.write_label(arg_1)
+
+        if command == 'C_FUNCTION':
+            c.write_function(arg_1, arg_2)
+
+        if command == 'C_RETURN':
+            c.write_return()
+
+        if command == 'C_CALL':
+            c.write_call(arg_1, arg_2)
 
     c.close()
 
