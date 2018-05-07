@@ -5,9 +5,11 @@ class CodeWriter(object):
 
     def write_init(self):
        assembly="""
+       @256
+       D=A
        @SP
-       M=256  // initialize the stack
-       call Sys.init 0
+       M=D  // initialize the stack
+       @Sys.init
        """
        self.file_object.write(assembly)
 
@@ -441,8 +443,81 @@ class CodeWriter(object):
        """.format(label)
        )
 
-    def write_call(function_name, num_args):
-        pass
+    def write_call(self, function_name, num_args):
+        assembly="""
+        // save the return address
+        @RETURN-ADDRESS // get the return address
+        D=A  // save the address
+        @SP  // get the stack address
+        A=M  // go to the end of the stack
+        M=D  // save the return address there
+        @SP
+        M=M+1 // increase the stack pointer
+
+        // save the local address
+        @LCL // get the local address
+        D=M  // save the address
+        @SP  // get the stack address
+        A=M  // go to the end of the stack
+        M=D  // save the address there
+        @SP
+        M=M+1 // increase the stack pointer
+
+        // save the argument address
+        @ARG // get the argument address
+        D=M  // save the address
+        @SP  // get the stack address
+        A=M  // go to the end of the stack
+        M=D  // save the address there
+        @SP
+        M=M+1 // increase the stack pointer
+
+        // save the this address
+        @THIS // get the this address
+        D=M  // save the address
+        @SP  // get the stack address
+        A=M  // go to the end of the stack
+        M=D  // save the address there
+        @SP
+        M=M+1 // increase the stack pointer
+
+        // save the that address
+        @THAT // get the that address
+        D=M  // save the address
+        @SP  // get the stack address
+        A=M  // go to the end of the stack
+        M=D  // save the address there
+        @SP
+        M=M+1 // increase the stack pointer
+
+        // reposition the argument
+        @SP
+        D=M
+        @ARG
+        M=D
+        @5
+        D=A
+        @ARG
+        M=M-D
+        @{0}
+        D=A
+        @ARG
+        M=M-D
+
+        // reposition the local
+        @SP
+        D=M
+        @LCL
+        M=D
+
+        // go to the function
+        @{1}
+        0;JMP
+
+        (RETURN-ADDRESS)
+        """.format(num_args, function_name)
+
+        self.file_object.write(assembly)
 
     def write_return(self):
         assembly="""
