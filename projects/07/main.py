@@ -3,8 +3,8 @@ from parser import Parser
 from code_writer import CodeWriter
 
 # TODO: make this command line arguments
-FILENAME='FibonacciElement'
-BASE = '/Users/plum/Desktop/codes/nand2tetris/projects/08/FunctionCalls/FibonacciElement/'
+FILENAME='NestedCall'
+BASE = '/Users/plum/Desktop/codes/nand2tetris/projects/08/FunctionCalls/NestedCall/'
 READ_ADDRESS = '{0}'.format(BASE)
 WRITE_ADDRESS = '{0}{1}.asm'.format(BASE, FILENAME)
 
@@ -13,9 +13,9 @@ if __name__ == '__main__':
 
     files = [f for f in listdir(READ_ADDRESS) if f.find('.vm') != -1]
     sys_init = files.index('Sys.vm')
-    main = files.index('Main.vm')
+    # main = files.index('Main.vm')
     c.write_init()
-    for filename in [files[sys_init], files[main]]: #  order matters
+    for filename in [files[sys_init]]: #  order matters
         # only parse .vm files
         if filename.find('.vm') != -1:
             p = Parser(BASE + filename)

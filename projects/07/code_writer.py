@@ -2,16 +2,23 @@ class CodeWriter(object):
     def __init__(self, filename):
         self.file_object = open(filename, 'wb')
         self.counter = 0
+        self.functions = []
 
     def write_init(self):
-       assembly="""
+       self.functions.append('init')
+       self.file_object.write("""
        @256
        D=A
        @SP
        M=D  // initialize the stack
-       @Sys.init
-       """
-       self.file_object.write(assembly)
+       """)
+
+       self.write_call('Sys.init', 0)
+       self.write_return()
+
+    def new_number(self):
+        self.counter+=1
+        return self.counter
 
     def write_arithmetic(self, command):
         assembly = ''
@@ -420,14 +427,14 @@ class CodeWriter(object):
 
     def write_label(self, label):
         self.file_object.write(
-        """({})""".format(label)
+        """({0}${1})""".format(self.functions[-1],label)
         )
 
     def write_goto(self,label):
         self.file_object.write("""
-        @{}    // load the label address and jump to it
+        @{0}${1}    // load the label address and jump to it
         0;JMP
-        """.format(label)
+        """.format(self.functions[-1], label)
         )
 
     def write_if(self, label):
@@ -446,7 +453,7 @@ class CodeWriter(object):
     def write_call(self, function_name, num_args):
         assembly="""
         // save the return address
-        @RETURN-ADDRESS // get the return address
+        @RETURN-ADDRESS{2} // // get the return address RETURN-ADDRESS{2}
         D=A  // save the address
         @SP  // get the stack address
         A=M  // go to the end of the stack
@@ -514,8 +521,8 @@ class CodeWriter(object):
         @{1}
         0;JMP
 
-        (RETURN-ADDRESS)
-        """.format(num_args, function_name)
+        (RETURN-ADDRESS{2})
+        """.format(num_args, function_name, self.new_number())
 
         self.file_object.write(assembly)
 
@@ -577,10 +584,13 @@ class CodeWriter(object):
 
         @R13    // go to the saved RET
         A=M
+        0;JMP
         """
+        self.functions.pop()
         self.file_object.write(assembly)
 
     def write_function(self, function_name, num_locals):
+        self.functions.append(function_name)
         assembly="""
         ({0})
         """.format(function_name)
@@ -588,7 +598,6 @@ class CodeWriter(object):
         self.file_object.write(assembly)
         for i in range(int(num_locals)): # initialize all local vars to zero
             self.write_push_pop('C_PUSH', 'constant', 0)
-            self.write_push_pop('C_POP', 'local', i)
 
     def close(self):
         self.file_object.write("""
