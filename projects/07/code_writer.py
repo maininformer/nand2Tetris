@@ -2,10 +2,10 @@ class CodeWriter(object):
     def __init__(self, filename):
         self.file_object = open(filename, 'wb')
         self.counter = 0
-        self.functions = []
+        self.current_function = None
 
     def write_init(self):
-       self.functions.append('init')
+       self.current_function = 'init'
        self.file_object.write("""
        @256
        D=A
@@ -427,14 +427,14 @@ class CodeWriter(object):
 
     def write_label(self, label):
         self.file_object.write(
-        """({0}${1})""".format(self.functions[-1],label)
+        """({0}${1})""".format(self.current_function, label)
         )
 
     def write_goto(self,label):
         self.file_object.write("""
         @{0}${1}    // load the label address and jump to it
         0;JMP
-        """.format(self.functions[-1], label)
+        """.format(self.current_function, label)
         )
 
     def write_if(self, label):
@@ -445,14 +445,15 @@ class CodeWriter(object):
 
        D=M    // save the value
 
-       @{}    // load the label address
+       @{0}${1}    // load the label address
        D;JNE  // jump if D is not equal to zero
-       """.format(label)
+       """.format(self.current_function, label)
        )
 
     def write_call(self, function_name, num_args):
         assembly="""
-        // save the return address
+
+        // CALLING {1} WITH {0} ARGUMENTS
         @RETURN-ADDRESS{2} // // get the return address RETURN-ADDRESS{2}
         D=A  // save the address
         @SP  // get the stack address
@@ -528,6 +529,7 @@ class CodeWriter(object):
 
     def write_return(self):
         assembly="""
+        // RETURNING
         @5
         D=A
         @LCL
@@ -586,11 +588,10 @@ class CodeWriter(object):
         A=M
         0;JMP
         """
-        self.functions.pop()
         self.file_object.write(assembly)
 
     def write_function(self, function_name, num_locals):
-        self.functions.append(function_name)
+        self.current_function = function_name
         assembly="""
         ({0})
         """.format(function_name)
