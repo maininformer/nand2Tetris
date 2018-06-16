@@ -1,6 +1,7 @@
 class CodeWriter(object):
-    def __init__(self, filename):
-        self.file_object = open(filename, 'wb')
+    def __init__(self, file_address):
+        self.filename = None
+        self.file_object = open(file_address, 'wb')
         self.counter = 0
         self.current_function = None
 
@@ -19,6 +20,9 @@ class CodeWriter(object):
     def new_number(self):
         self.counter+=1
         return self.counter
+
+    def set_filename(self, name):
+        self.filename = name
 
     def write_arithmetic(self, command):
         assembly = ''
@@ -268,15 +272,47 @@ class CodeWriter(object):
 
         self.file_object.write(assembly)
 
+    def write_static(self, command, index):
+        if command == 'C_PUSH':
+            assembly = """
+            @{0}${1}
+            D=M
+
+            @SP  // get the stack
+            A=M   // go to that address
+
+            M=D   // save the value
+
+            @SP
+            M=M+1  // increase the stack pointer
+            """.format(self.filename, index)
+
+            self.file_object.write(assembly)
+
+        elif command == 'C_POP':
+            assembly = """
+            @SP   // get the stack
+            M=M-1 // decrease the stack pointer
+            A=M   // go to that address
+
+            D=M   // save the value
+
+            @{0}${1}
+            M=D   // put the stack value there
+            """.format(self.filename, index)
+
+            self.file_object.write(assembly)
 
     def write_push_pop(self, command, segment, index):
+        if segment == 'static':
+            self.write_static(command, index)
+            return
         SEGMENT_MAPPING = {
             'constant': 'SP',
             'local': 'LCL',
             'argument': 'ARG',
             'this': 'THIS',
             'that': 'THAT',
-            'static': 'NOT',
         }
         assembly = ''
         if command == 'C_PUSH':
@@ -307,12 +343,6 @@ class CodeWriter(object):
             D=M
             """.format(TEMP_MAPPING[int(index)])
 
-            elif segment == 'static':
-                address = 16 + int(index)
-                assembly += """
-            @{}
-            D=M
-            """.format(address)
 
             elif segment == 'pointer':
                 POINTER_MAPPING = {
@@ -371,19 +401,6 @@ class CodeWriter(object):
             @R{}
             M=D   // put the stack value there
             """.format(TEMP_MAPPING[int(index)])
-
-            elif segment == 'static':
-                address = 16 + int(index)
-                assembly += """
-            @SP   // get the stack
-            M=M-1 // decreas the stack pointer
-            A=M   // go to that address
-
-            D=M   // save the value
-
-            @{}
-            M=D   // put the stack value there
-            """.format(address)
 
             elif segment == 'pointer':
                 POINTER_MAPPING = {
