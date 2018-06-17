@@ -1,0 +1,23 @@
+function Main.main 2
+call Screen.clearScreen 0
+pop temp 0
+push constant 10
+push constant 108
+push constant 20
+push constant 148
+call Rectangle.new 4
+pop local 0
+push constant 253
+push constant 125
+push constant 259
+push constant 131
+call Rectangle.new 4
+pop local 1
+push local 0
+call Renderer.render 1
+pop temp 0
+push local 1
+call Renderer.render 1
+pop temp 0
+push constant 0
+return

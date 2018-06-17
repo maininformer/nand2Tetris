@@ -1,0 +1,19 @@
+class Rectangle {
+  field int x1;
+  field int y1;
+  field int x2;
+  field int y2;
+    
+  constructor Rectangle new(int a, int b, int c, int d){
+    let x1 = a; // bug, if a is called x1, it will not render
+    let y1 = b;
+    let x2 = c;
+    let y2 = d;
+    return this;
+  } 
+  
+  method int getX1(){return x1;}
+  method int getY1(){return y1;}
+  method int getX2(){return x2;}
+  method int getY2(){return y2;}
+}

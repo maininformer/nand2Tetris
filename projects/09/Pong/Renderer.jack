@@ -1,0 +1,14 @@
+class Renderer {
+  function void render(Rectangle rectangle){ 
+    do Screen.drawRectangle(
+        rectangle.getX1(), 
+        rectangle.getY1(),
+        rectangle.getX2(), 
+        rectangle.getY2());
+    return;
+  }
+}
+
+
+
+

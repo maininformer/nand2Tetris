@@ -1,0 +1,14 @@
+class Main { 
+  function void main(){
+    var Rectangle player; var Rectangle ball;
+    do Screen.clearScreen();
+    let player = Rectangle.new(10, 108, 20, 148);
+    let ball = Rectangle.new(253, 125, 259, 131);
+    do Renderer.render(player);
+    do Renderer.render(ball);
+    return;
+  }
+}
+
+
+
