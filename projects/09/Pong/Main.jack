@@ -1,11 +1,40 @@
 class Main { 
   function void main(){
-    var Rectangle player; var Rectangle ball;
+    var Rectangle player; var Rectangle ball; var int xVelocity;
     do Screen.clearScreen();
+    let xVelocity = -1;
     let player = Rectangle.new(10, 108, 20, 148);
     let ball = Rectangle.new(253, 125, 259, 131);
     do Renderer.render(player);
     do Renderer.render(ball);
+    
+    while (true){
+      do Sys.wait(10);
+      if (Keyboard.keyPressed() = 87){ // w
+        do player.setY1(player.getY1() - 1);
+        do player.setY2(player.getY2() - 1);
+      }
+      if (Keyboard.keyPressed() = 83){ // s
+        do player.setY1(player.getY1() + 1);
+        do player.setY2(player.getY2() + 1);
+      }
+      if (ball.getX1() = player.getX2()){ // hit
+        let xVelocity = 1;
+      }
+      if(ball.getX2() = 511){
+        let xVelocity = -1;
+      }
+      if (ball.getX1() = 0){ // miss
+        do ball.setX1(253);            
+        do ball.setX2(259);
+      } 
+      do ball.setX1(ball.getX1() + xVelocity);
+      do ball.setX2(ball.getX2() + xVelocity);    
+      do Screen.clearScreen();
+      do Renderer.render(ball);
+      do Renderer.render(player);
+      
+    }
     return;
   }
 }

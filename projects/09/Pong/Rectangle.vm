@@ -32,3 +32,31 @@ push argument 0
 pop pointer 0
 push this 3
 return
+function Rectangle.setX1 0
+push argument 0
+pop pointer 0
+push argument 1
+pop this 0
+push constant 0
+return
+function Rectangle.setY1 0
+push argument 0
+pop pointer 0
+push argument 1
+pop this 1
+push constant 0
+return
+function Rectangle.setX2 0
+push argument 0
+pop pointer 0
+push argument 1
+pop this 2
+push constant 0
+return
+function Rectangle.setY2 0
+push argument 0
+pop pointer 0
+push argument 1
+pop this 3
+push constant 0
+return

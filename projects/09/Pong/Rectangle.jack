@@ -16,4 +16,9 @@ class Rectangle {
   method int getY1(){return y1;}
   method int getX2(){return x2;}
   method int getY2(){return y2;}
+  method void setX1(inx x){let x1 = x; return;}
+  method void setY1(inx y){let y1 = y; return;}
+  method void setX2(inx x){let x2 = x; return;}
+  method void setY2(inx y){let y2 = y; return;}
+
 }
