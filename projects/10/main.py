@@ -11,9 +11,9 @@ if __name__ == '__main__':
     tokenizer = Tokenizer(READ_PATH)
     dest_file = open(COMPILE_PATH, 'wb')
     dest_file.write('<tokens>\n')
+    tokenizer.advance()
     while tokenizer.has_more_tokens:
         next_line='  '
-        tokenizer.advance()
         token_type = tokenizer.token_type()
         if token_type == 'KEYWORD':
             next_line += '<keyword> {0} </keyword>'.format(tokenizer.keyword())
@@ -27,6 +27,8 @@ if __name__ == '__main__':
             next_line += '<stringConstant> {0} </stringConstant>'.format(tokenizer.stringVal())
         if len(next_line.strip())>0:
             dest_file.write('{}\n'.format(next_line))
+
+        tokenizer.advance()
 
     dest_file.write('</tokens>')
     dest_file.close()

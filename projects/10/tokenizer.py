@@ -53,14 +53,39 @@ class Tokenizer(object):
             '~'
         ]
 
+    @staticmethod
+    def add_white_space_around(text, symbol):
+        return re.sub('{}'.format(re.escape(symbol)), ' {} '.format(re.escape(symbol)), text)
+
+    @staticmethod
+    def take_string_constant_out(line):
+        first_quote_index = line.find('"')
+        first_half_of_line = line[0:first_quote_index]
+        second_quote_index = len(first_half_of_line) + line[first_quote_index + 1:].find('"') + 1 # this final 1 is for the 1 character lost in first_quote_index + 1 find
+        string_constant = line[first_quote_index: second_quote_index + 1]
+        first_half = line[0:first_quote_index]
+        second_half = line[second_quote_index + 1:]
+        return first_half, string_constant, second_half
+
     def advance_line(self):
         temp = self.file_object.readline()
         if temp == '':
             self.has_more_tokens = False
         else:
+            # remove comments
             temp = re.sub(r'//.*|/\*.*|/\*\*.*', '', temp)
-            self.current_line = temp.split()
-            return
+            # wrap symbols with whitespace
+            for symbol in self.symbols:
+                temp = Tokenizer.add_white_space_around(temp, symbol)
+            temp = temp.replace('\\', '')
+            if temp.find('"') > -1:
+                # cut away the sting constant
+                first, string_constant, second = Tokenizer.take_string_constant_out(temp)
+                self.current_line = first.split() + [string_constant] + second.split()
+                return
+            else:
+                self.current_line = temp.split()
+                return
 
     def advance(self):
         if len(self.current_line) == 0:
@@ -79,9 +104,9 @@ class Tokenizer(object):
             return 'KEYWORD'
         elif self.current_token in self.symbols:
             return 'SYMBOL'
-        elif re.match(r'[A-za-z_][A-Za-z0-9_]*', self.current_token):
+        elif re.match(r'[A-Za-z_][A-Za-z0-9_]*', self.current_token):
             return 'IDENTIFIER'
-        elif re.match(r'[0-9]*$', self.current_token):
+        elif re.match(r'[0-9]+$', self.current_token):
             number = int(self.current_token)
             if number > 0 and number < 32767:
                 return 'INT_CONST'
