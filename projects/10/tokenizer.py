@@ -89,7 +89,7 @@ class Tokenizer(object):
             return 'STRING_CONST'
 
     def keyword(self):
-        return self.current_token.upper()
+        return self.current_token.lower()
 
     def symbol(self):
         return self.current_token

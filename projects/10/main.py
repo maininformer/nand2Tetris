@@ -3,14 +3,14 @@ from tokenizer import Tokenizer
 DIRECTORY_NAME = 'Square'
 FILE_NAME = 'Main'
 SRC_SUFFIX = 'jack'
-COMPILE_PATH = './compiled/{}'.format(DIRECTORY_NAME)
-READ_PATH = '{0}/{1}.{2}'.format(DIRECTORY_NAME, FILE_NAME, SRC_SUFFIX)
 TOKENIZED_SUFFIX = 'xml'
+COMPILE_PATH = './compiled/{0}/{1}T.{2}'.format(DIRECTORY_NAME, FILE_NAME, TOKENIZED_SUFFIX)
+READ_PATH = '{0}/{1}.{2}'.format(DIRECTORY_NAME, FILE_NAME, SRC_SUFFIX)
 
 if __name__ == '__main__':
     tokenizer = Tokenizer(READ_PATH)
-    dest_file = open(compile_path, 'wb')
-    dest_file.writeline('<tokens>')
+    dest_file = open(COMPILE_PATH, 'wb')
+    dest_file.write('<tokens>\n')
     while tokenizer.has_more_tokens:
         next_line='  '
         tokenizer.advance()
@@ -25,7 +25,9 @@ if __name__ == '__main__':
             next_line += '<integerConstant> {0} </integerConstant>'.format(tokenizer.intVal())
         elif token_type == 'STRING_CONST':
             next_line += '<stringConstant> {0} </stringConstant>'.format(tokenizer.stringVal())
+        if len(next_line.strip())>0:
+            dest_file.write('{}\n'.format(next_line))
 
-    dest_file.writeline('</tokens>')
+    dest_file.write('</tokens>')
     dest_file.close()
 
