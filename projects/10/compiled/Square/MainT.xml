@@ -95,12 +95,6 @@
   <identifier> i </identifier>
   <symbol> = </symbol>
   <identifier> i </identifier>
-  <symbol> * </symbol>
-  <symbol> ( </symbol>
-  <symbol> - </symbol>
-  <identifier> j </identifier>
-  <symbol> ) </symbol>
-  <symbol> ; </symbol>
   <keyword> let </keyword>
   <identifier> j </identifier>
   <symbol> = </symbol>

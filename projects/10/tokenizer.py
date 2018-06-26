@@ -73,7 +73,7 @@ class Tokenizer(object):
             self.has_more_tokens = False
         else:
             # remove comments
-            temp = re.sub(r'//.*|/\*.*|/\*\*.*', '', temp)
+            temp = re.sub(r'//.*|/\*.*|/\*\*.*|\*.*', '', temp)
             # wrap symbols with whitespace
             for symbol in self.symbols:
                 temp = Tokenizer.add_white_space_around(temp, symbol)
@@ -118,7 +118,7 @@ class Tokenizer(object):
             return 'IDENTIFIER'
         elif re.match(r'[0-9]+$', self.current_token):
             number = int(self.current_token)
-            if number > 0 and number < 32767:
+            if number >= 0 and number < 32767:
                 return 'INT_CONST'
         elif re.match(r'^\".*\"$', self.current_token):
             return 'STRING_CONST'
@@ -133,7 +133,7 @@ class Tokenizer(object):
         return re.match(r'[A-za-z_][A-Za-z0-9_]*', self.current_token).group(0)
 
     def intVal(self):
-        return re.match(r'[0-9]*$', self.current_token).group(0)
+        return re.match(r'[0-9]+$', self.current_token).group(0)
 
     def stringVal(self):
         return re.match(r'^\".*\"$', self.current_token).group(0).strip('"').strip('\n')
