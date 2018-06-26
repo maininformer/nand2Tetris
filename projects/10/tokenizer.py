@@ -99,10 +99,20 @@ class Tokenizer(object):
            self.current_token = self.current_line.pop(0)
            return
 
+    def convert_symbol(self):
+        converter = {
+            '>': '&gt;',
+            '<': '&lt;',
+            '&': '&amp;'
+        }
+        if self.current_token in converter.keys():
+            self.current_token = converter[self.current_token]
+
     def token_type(self):
         if self.current_token in self.keywords:
             return 'KEYWORD'
         elif self.current_token in self.symbols:
+            self.convert_symbol()
             return 'SYMBOL'
         elif re.match(r'[A-Za-z_][A-Za-z0-9_]*', self.current_token):
             return 'IDENTIFIER'

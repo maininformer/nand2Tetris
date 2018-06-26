@@ -1,7 +1,7 @@
 from tokenizer import Tokenizer
 
 DIRECTORY_NAME = 'Square'
-FILE_NAME = 'Main'
+FILE_NAME = 'Square'
 SRC_SUFFIX = 'jack'
 TOKENIZED_SUFFIX = 'xml'
 COMPILE_PATH = './compiled/{0}/{1}T.{2}'.format(DIRECTORY_NAME, FILE_NAME, TOKENIZED_SUFFIX)
