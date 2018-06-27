@@ -2,7 +2,7 @@ from os import listdir
 
 from tokenizer import Tokenizer
 
-DIRECTORY_NAME = 'Square'
+DIRECTORY_NAME = 'ArrayTest'
 SRC_SUFFIX = 'jack'
 TOKENIZED_SUFFIX = 'xml'
 
