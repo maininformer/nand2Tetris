@@ -1,8 +1,18 @@
 class Compiler(object):
-    def __ini__(self):
-        pass
+    def __init__(self, file_address, compile_address):
+        self.file_object = open(file_address, 'rb')
+        self.compiled = open(compile_address, 'wb')
+        self.current_line = self.advance()
+
+    def advance(self):
+        new_line = self.file_object.readline()
+        if new_line == '':
+            return
+        else:
+            return new_line.strip()
     def compileClass(self):
-        pass
+        self.compiled.write('<class>\n')
+
     def compileClassVarDec(self):
         pass
     def compileSubroutine(self):

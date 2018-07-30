@@ -1,6 +1,7 @@
 from os import listdir
 
 from tokenizer import Tokenizer
+from compiler import Compiler
 
 DIRECTORY_NAME = 'ArrayTest'
 SRC_SUFFIX = 'jack'
@@ -10,9 +11,9 @@ if __name__ == '__main__':
     READ_PATH = '{0}/'.format(DIRECTORY_NAME)
     files = [f for f in listdir(READ_PATH) if f.find('.jack') != -1]
     for f in files:
-        COMPILE_PATH = './compiled/{0}/{1}T.{2}'.format(DIRECTORY_NAME, f.split('.')[0], TOKENIZED_SUFFIX)
+        COMPILE_PATH_1 = './compiled/{0}/{1}T.{2}'.format(DIRECTORY_NAME, f.split('.')[0], TOKENIZED_SUFFIX)
         tokenizer = Tokenizer('{0}/{1}'.format(READ_PATH, f))
-        dest_file = open(COMPILE_PATH, 'wb')
+        dest_file = open(COMPILE_PATH_1, 'wb')
         dest_file.write('<tokens>\n')
         tokenizer.advance()
         while tokenizer.has_more_tokens:
@@ -35,4 +36,13 @@ if __name__ == '__main__':
 
         dest_file.write('</tokens>')
         dest_file.close()
+
+    READ_PATH_2 = './compiled/{0}'.format(DIRECTORY_NAME)
+    tokenized_files = [f for f in listdir(READ_PATH_2) if f.find('T.{}'.format(TOKENIZED_SUFFIX)) != -1]
+    for f in tokenized_files:
+        COMPILE_PATH_2 = './compiled/{0}/{1}.{2}'.format(DIRECTORY_NAME, f.split('T.')[0], TOKENIZED_SUFFIX)
+        compiler = Compiler(COMPILE_PATH_1, COMPILE_PATH_2)
+        compiler.compileClass()
+
+
 
