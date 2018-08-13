@@ -2,29 +2,232 @@ class Compiler(object):
     def __init__(self, file_address, compile_address):
         self.file_object = open(file_address, 'rb')
         self.compiled = open(compile_address, 'wb')
-        self.current_line = self.advance()
+        first_line = self.advance()
+        self.current_line = first_line
+        self.nest_level = 0
+
+    def format_and_write_line(self):
+       return self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2, self.current_line))
+
+    def words_exist(self, words):
+        for word in words:
+            if self.current_line.find(word) != -1:
+                continue
+            else:
+                return False
+        return True
+
+    def open_tag(self, tag_name):
+        self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2,"<{}>".format(tag_name)))
+        self.nest_level += 1
+
+    def close_tag(self, tag_name):
+        self.nest_level -= 1
+        self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2,"<\{}>".format(tag_name)))
 
     def advance(self):
         new_line = self.file_object.readline()
         if new_line == '':
             return
         else:
-            return new_line.strip()
+            self.current_line = new_line.strip()
+            return
     def compileClass(self):
-        self.compiled.write('<class>\n')
+        self.open_tag("class")
+        self.advance()
+
+        if self.words_exist(['keyword','class']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['identifier']): # gotta regex for the name too
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['symbol', '{']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+
+        while self.words_exist(['keyword', 'static']) or self.words_exist(['keyword', 'field']):
+            self.compileClassVarDec()
+
+        while self.words_exist(['keyword', 'function']):
+            self.compileSubroutine()
+
+        if self.words_exist(['symbol', '}']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+
+        self.close_tag("class")
 
     def compileClassVarDec(self):
         pass
+
     def compileSubroutine(self):
-        pass
+        self.open_tag("subroutineDec")
+
+        if self.words_exist(['keyword', 'constructor']) or self.words_exist(['keyword', 'function']) or self.words_exist(['keyword', 'method']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        # void, int etc are keywords, class names are identifiers
+        if self.words_exist(['keyword']) or self.words_exist(['identifier']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['identifier']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['symbol', '(' ]):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        # no raise needed here cause its optional
+        if self.words_exist(['identifier']): # we have parameters
+            self.compileParameterList()
+        else:
+            self.open_tag('parameterList')
+            self.close_tag('parameterList')
+        if self.words_exist(['symbol',')']):
+            self.format_and_write_line()
+            self.advance()
+        if self.words_exist(['{']):
+            self.compileSubroutineBody()
+
+        self.close_tag("subroutineDec")
+
     def compileParameterList(self):
-        pass
+        self.open_tag('parameterList')
+
+        has_next = True
+        while has_next:
+            if self.words_exist(['identifier']) or words_exist(['keyword']):
+                self.format_and_write_line()
+                self.advance()
+            else:
+                raise
+            if self.words_exist(['identifier']):
+                self.format_and_write_line()
+                self.advance()
+            else:
+                raise
+            has_next = False
+            if self.words_exist([',']):
+                self.format_and_write_line()
+                self.advance()
+                has_next = True
+
+        self.close_tag('parameterList')
+
+    def compileSubroutineBody(self):
+        self.open_tag('subroutineBody')
+
+        if self.words_exist(['{']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        while self.words_exist(['keyword','var']):
+            self.compileVarDec()
+        while  self.words_exist(['if']) or self.words_exist(['let']) or self.words_exist(['while']) or self.words_exist(['do']) or self.words_exist(['return']):
+            self.compileStatements()
+
+        self.close_tag('subroutineBody')
+
     def compileVarDec(self):
-        pass
+        self.open_tag('varDec')
+
+        if self.words_exist(['var']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['keyword']) or self.words_exist(['identifier']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        has_next = True
+        while has_next:
+            if self.words_exist(['identifier']):
+                self.format_and_write_line()
+                self.advance()
+                has_next = False
+            if self.words_exist(['symbol', ',']):
+                self.format_and_write_line()
+                self.advance()
+                has_next = True
+        if self.words_exist(['symbol', ';']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        self.close_tag('varDec')
+
     def compileStatements(self):
-        pass
+        self.open_tag('statement')
+
+        while self.words_exist(['keyword', 'let']) or self.words_exist(['keyword', 'if']) or self.words_exist(['keyword', 'while']) or self.words_exist(['keyword', 'do'] or self.words_exist(['keyword', 'return'])):
+            if self.words_exist(['keyword', 'let']):
+                self.compileLet()
+                self.advance()
+            if self.words_exist(['keyword', 'if']):
+                self.compileIf()
+                self.advance()
+            if self.words_exist(['keyword', 'while']):
+                self.compileWhile()
+                self.advance()
+            if self.words_exist(['keyword', 'do']):
+                self.complieDo()
+                self.advance()
+            if self.words_exist(['keyword', 'return']):
+                self.compileReturn()
+                self.advance()
+        self.close_tag('statement')
+
     def compileDo(self):
-        pass
+        self.open_tag('doStatement')
+
+        if self.words_exist(['keyword', 'do']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['identifier')]:
+            self.compileSubroutineCall()
+        if self.words_exist(['symbol',';']):
+            self.format_and_write_line()
+            self.advance()
+
+        self.close_tag('doStatement')
+
+    def compileSubroutineCall(self):
+        # no tags
+        if words_exist(['identifier']):
+            self.format_and_write_line()
+            self.advnace()
+        if words_exist(['symbol','(']):
+            self.format_and_write_line()
+            self.advance()
+        if is_expressionList():
+            self.compileExpressionList()
+        if words_exist(['symbol', ')']):
+            self.format_and_write_line()
+            self.advance()
+
+
+
     def compileLet(self):
         pass
     def compileWhile(self):
@@ -38,4 +241,6 @@ class Compiler(object):
     def compileTerm(self):
         pass
     def compileExpressionList(self):
+        pass
+    def is_expressionList(self):
         pass
