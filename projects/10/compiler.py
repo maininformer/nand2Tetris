@@ -218,15 +218,30 @@ class Compiler(object):
             self.format_and_write_line()
             self.advnace()
         if words_exist(['symbol','(']):
+            # subroutine call
             self.format_and_write_line()
             self.advance()
-        if is_expressionList():
             self.compileExpressionList()
-        if words_exist(['symbol', ')']):
+            if words_exist(['symbol', ')']):
+                self.format_and_write_line()
+                self.advance()
+        elif words_exist(['symbol', '.']):
             self.format_and_write_line()
             self.advance()
-
-
+            if words_exist(['identifier']):
+                self.format_and_write_line()
+                self.advnace()
+            if words_exist(['symbol','(']):
+                # subroutine call
+                self.format_and_write_line()
+                self.advance()
+            # always compile expresionLists cause nothing is an expressionList
+            self.compileExpressionList()
+            if words_exist(['symbol', ')']):
+                self.format_and_write_line()
+                self.advance()
+        else:
+            raise
 
     def compileLet(self):
         pass
@@ -237,10 +252,20 @@ class Compiler(object):
     def compileIf(self):
         pass
     def compileExpression(self):
-        pass
+        self.open_tag('expression')
+        # TODO
+        self.close_tag('expression')
     def compileTerm(self):
         pass
     def compileExpressionList(self):
-        pass
-    def is_expressionList(self):
-        pass
+        self.open_tag('expressionList')
+        has_next = True
+        while has_next:
+            self.compileExpression()
+            has_next = False
+            if self.words_exist([',']):
+                self.format_and_write_line()
+                self.advance()
+                has_next = True
+
+        self.close_tag('expressionList')
