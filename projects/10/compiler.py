@@ -1,3 +1,6 @@
+OPERATIONS = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
+
+
 class Compiler(object):
     def __init__(self, file_address, compile_address):
         self.file_object = open(file_address, 'rb')
@@ -253,9 +256,14 @@ class Compiler(object):
         pass
     def compileExpression(self):
         self.open_tag('expression')
-        # TODO
+        self.compileTerm()
+        while self.word_exists(OPERATIONS):
+            self.format_and_write_line()
+            self.advance()
+            self.compileTerm()
         self.close_tag('expression')
     def compileTerm(self):
+        # TODO
         pass
     def compileExpressionList(self):
         self.open_tag('expressionList')
