@@ -1,4 +1,7 @@
+KEYWORD_CONSTANTS = ['true', 'false', 'null', 'this']
 OPERATIONS = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
+UNARY_OPERATIONS = ['-', '~']
+
 
 
 class Compiler(object):
@@ -215,12 +218,12 @@ class Compiler(object):
 
         self.close_tag('doStatement')
 
-    def compileSubroutineCall(self):
+    def compileSubroutineCall(self, identifier_compiled = False):
         # no tags
-        if words_exist(['identifier']):
+        if self.words_exist(['identifier']) and not identifier_compiled:
             self.format_and_write_line()
             self.advnace()
-        if words_exist(['symbol','(']):
+        if self.words_exist(['symbol','(']):
             # subroutine call
             self.format_and_write_line()
             self.advance()
@@ -228,19 +231,19 @@ class Compiler(object):
             if words_exist(['symbol', ')']):
                 self.format_and_write_line()
                 self.advance()
-        elif words_exist(['symbol', '.']):
+        elif self.words_exist(['symbol', '.']):
             self.format_and_write_line()
             self.advance()
-            if words_exist(['identifier']):
+            if self.words_exist(['identifier']):
                 self.format_and_write_line()
                 self.advnace()
-            if words_exist(['symbol','(']):
+            if self.words_exist(['symbol','(']):
                 # subroutine call
                 self.format_and_write_line()
                 self.advance()
             # always compile expresionLists cause nothing is an expressionList
             self.compileExpressionList()
-            if words_exist(['symbol', ')']):
+            if self.words_exist(['symbol', ')']):
                 self.format_and_write_line()
                 self.advance()
         else:
@@ -263,8 +266,41 @@ class Compiler(object):
             self.compileTerm()
         self.close_tag('expression')
     def compileTerm(self):
-        # TODO
-        pass
+        self.open_tag('term')
+        if self.word_exists(['integerConstant']) or self.word_exists(['stringConstant']) or self.word_exists(KEYWORD_CONSTANTS):
+            self.format_and_write_line()
+        elif self.word_exists(['identifier']):
+            # if there is a [ next
+            if self.word_exists(['symbol', '[']):
+                self.format_and_write_line()
+                self.compileExpression()
+                if self.word_exists(['symbol', ']']):
+                    self.format_and_write_line()
+                else:
+                    raise
+            # if there is a ( next subroutine call
+            elif self.word_exists(['(']):
+                self.compileSubroutineCall(identifier_compiled=True)
+
+            else:
+                raise
+        elif self.word_exists(['(', 'symbol']):
+            self.format_and_write_line()
+            self.compileExpression()
+            if self.word_exists([')', 'symbol']):
+                self.format_and_write_line()
+            else:
+                raise
+        elif self.word_exists(UNARY_OPERATIONS):
+            self.format_and_write_line()
+            self.compileTerm()
+
+        else:
+            raise
+        self.close_tag('term')
+
+
+
     def compileExpressionList(self):
         self.open_tag('expressionList')
         has_next = True
