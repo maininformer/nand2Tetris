@@ -1,4 +1,5 @@
 KEYWORD_CONSTANTS = ['true', 'false', 'null', 'this']
+# TODO: potentially gotta replace & with &amp;
 OPERATIONS = ['+', '-', '*', '/', '&', '|', '&lt;', '&gt;', '=']
 UNARY_OPERATIONS = ['-', '~']
 
