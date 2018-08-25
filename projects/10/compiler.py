@@ -149,6 +149,9 @@ class Compiler(object):
             self.compileVarDec()
         while  self.words_exist(['if']) or self.words_exist(['let']) or self.words_exist(['while']) or self.words_exist(['do']) or self.words_exist(['return']):
             self.compileStatements()
+        if self.words_exist(['}']):
+            self.format_and_write_line()
+            self.advance()
 
         self.close_tag('subroutineBody')
 

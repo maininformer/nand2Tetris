@@ -279,6 +279,7 @@
           <symbol> ; </symbol>
         </returnStatement>
       </statements>
+      <symbol> } </symbol>
     </subroutineBody>
   </subroutineDec>
   <symbol> } </symbol>
