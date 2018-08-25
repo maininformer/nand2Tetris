@@ -276,9 +276,33 @@ class Compiler(object):
         self.close_tag('letStatement')
 
     def compileWhile(self):
-        pass
+        self.open_tag('whileStatement')
+        if self.words_exist(['while', 'keyword']):
+            self.format_and_write_line()
+        else:
+            raise
+        if self.words_exist(['symbol', '(']):
+            self.format_and_write_line()
+        else:
+            raise
+        self.compileExpression()
+        if self.words_exist(['symbol', ')']):
+            self.format_and_write_line()
+        else:
+            raise
+        if self.words_exist(['symbol', '{']):
+            self.format_and_write_line()
+        else:
+            raise
+        self.compileStatements()
+        if self.words_exist(['symbol', '}']):
+            self.format_and_write_line()
+        else:
+            raise
+        self.close_tag('whileStatement')
+
     def compileReturn(self):
-        pass
+
     def compileIf(self):
         pass
     def compileExpression(self):
