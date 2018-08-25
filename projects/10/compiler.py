@@ -324,11 +324,53 @@ class Compiler(object):
         if self.words_exist([';', 'symbol']):
             self.format_and_write_line()
             self.advance()
-
         self.close_tag('returnStatement')
 
     def compileIf(self):
-        pass
+        self.open_tag('ifStatement')
+        if self.words_exist(['if', 'keyword']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['symbol', '(']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        self.compileExpression()
+        if self.words_exist(['symbol', ')']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['symbol', '{']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        self.compileStatements()
+        if self.words_exist(['symbol', '}']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['else', 'keyword']):
+            self.format_and_write_line()
+            self.advance()
+            if self.words_exist(['symbol', '{']):
+                self.format_and_write_line()
+                self.advance()
+            else:
+                raise
+            self.compileStatements()
+            if self.words_exist(['symbol', '}']):
+                self.format_and_write_line()
+                self.advance()
+            else:
+                raise
+        self.close_tag('ifStatement')
+
     def compileExpression(self):
         self.open_tag('expression')
         self.compileTerm()
