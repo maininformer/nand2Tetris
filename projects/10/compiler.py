@@ -1,4 +1,3 @@
-from pdb import set_trace as st
 KEYWORD_CONSTANTS = ['true', 'false', 'null', 'this']
 OPERATIONS = ['+', '-', '*', '/', '&', '|', '&lt;', '&gt;', '=']
 UNARY_OPERATIONS = ['-', '~']

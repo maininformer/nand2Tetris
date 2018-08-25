@@ -39,7 +39,6 @@ if __name__ == '__main__':
 
     READ_PATH_2 = './compiled/{0}'.format(DIRECTORY_NAME)
     tokenized_files = [f for f in listdir(READ_PATH_2) if f.find('T.{}'.format(TOKENIZED_SUFFIX)) != -1]
-    print(tokenized_files)
     for f in tokenized_files:
         COMPILE_PATH_1 = './compiled/{0}/{1}'.format(DIRECTORY_NAME, f)
         COMPILE_PATH_2 = './compiled/{0}/{1}.{2}'.format(DIRECTORY_NAME, f.split('T.')[0], TOKENIZED_SUFFIX)
