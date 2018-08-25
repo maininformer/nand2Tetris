@@ -1,5 +1,6 @@
+from pdb import set_trace as st
 KEYWORD_CONSTANTS = ['true', 'false', 'null', 'this']
-OPERATIONS = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
+OPERATIONS = ['+', '-', '*', '/', '&', '|', '&lt;', '&gt;', '=']
 UNARY_OPERATIONS = ['-', '~']
 
 
@@ -17,7 +18,7 @@ class Compiler(object):
 
     def words_exist(self, words):
         for word in words:
-            if self.current_line.find(word) != -1:
+            if self.current_line.replace('</', '').find(word) != -1:
                 continue
             else:
                 return False
@@ -29,7 +30,7 @@ class Compiler(object):
 
     def close_tag(self, tag_name):
         self.nest_level -= 1
-        self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2,"<\{}>".format(tag_name)))
+        self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2,"</{}>".format(tag_name)))
 
     def advance(self):
         new_line = self.file_object.readline()
@@ -182,25 +183,20 @@ class Compiler(object):
         self.close_tag('varDec')
 
     def compileStatements(self):
-        self.open_tag('statement')
+        self.open_tag('statements')
 
         while self.words_exist(['keyword', 'let']) or self.words_exist(['keyword', 'if']) or self.words_exist(['keyword', 'while']) or self.words_exist(['keyword', 'do'] or self.words_exist(['keyword', 'return'])):
             if self.words_exist(['keyword', 'let']):
                 self.compileLet()
-                self.advance()
             if self.words_exist(['keyword', 'if']):
                 self.compileIf()
-                self.advance()
             if self.words_exist(['keyword', 'while']):
                 self.compileWhile()
-                self.advance()
             if self.words_exist(['keyword', 'do']):
-                self.complieDo()
-                self.advance()
+                self.compileDo()
             if self.words_exist(['keyword', 'return']):
                 self.compileReturn()
-                self.advance()
-        self.close_tag('statement')
+        self.close_tag('statements')
 
     def compileDo(self):
         self.open_tag('doStatement')
@@ -222,7 +218,7 @@ class Compiler(object):
         # no tags
         if self.words_exist(['identifier']) and not identifier_compiled:
             self.format_and_write_line()
-            self.advnace()
+            self.advance()
         if self.words_exist(['symbol','(']):
             # subroutine call
             self.format_and_write_line()
@@ -236,7 +232,7 @@ class Compiler(object):
             self.advance()
             if self.words_exist(['identifier']):
                 self.format_and_write_line()
-                self.advnace()
+                self.advance()
             if self.words_exist(['symbol','(']):
                 # subroutine call
                 self.format_and_write_line()
@@ -372,41 +368,66 @@ class Compiler(object):
         self.close_tag('ifStatement')
 
     def compileExpression(self):
+        def get_condition():
+            res_list = []
+            for op in OPERATIONS:
+                res_list.append(self.words_exist([op]))
+            res = False
+            for r in res_list:
+                res = res or r
+            return res
+
         self.open_tag('expression')
         self.compileTerm()
-        while self.words_exist(OPERATIONS):
+        while get_condition():
             self.format_and_write_line()
             self.advance()
             self.compileTerm()
         self.close_tag('expression')
+
     def compileTerm(self):
+        def get_condition():
+            res_list = []
+            for k in KEYWORD_CONSTANTS:
+                res_list.append(self.words_exist([k]))
+            res = False
+            for r in res_list:
+                res = res or r
+            return res
+
         self.open_tag('term')
-        if self.words_exist(['integerConstant']) or self.words_exist(['stringConstant']) or self.words_exist(KEYWORD_CONSTANTS):
+        if self.words_exist(['integerConstant']) or self.words_exist(['stringConstant']) or get_condition():
             self.format_and_write_line()
+            self.advance()
         elif self.words_exist(['identifier']):
+            self.format_and_write_line()
+            self.advance()
             # if there is a [ next
             if self.words_exist(['symbol', '[']):
                 self.format_and_write_line()
+                self.advance()
                 self.compileExpression()
                 if self.words_exist(['symbol', ']']):
                     self.format_and_write_line()
+                    self.advance()
                 else:
                     raise
             # if there is a ( next subroutine call
-            elif self.words_exist(['(']):
+            elif self.words_exist(['(']) or self.words_exist(['.']):
                 self.compileSubroutineCall(identifier_compiled=True)
 
-            else:
-                raise
         elif self.words_exist(['(', 'symbol']):
             self.format_and_write_line()
+            self.advance()
             self.compileExpression()
             if self.words_exist([')', 'symbol']):
                 self.format_and_write_line()
+                self.advance()
             else:
                 raise
-        elif self.words_exist(UNARY_OPERATIONS):
+        elif self.words_exist(['-']) or self.words_exist(['~']):
             self.format_and_write_line()
+            self.advance()
             self.compileTerm()
         else:
             raise
@@ -414,7 +435,7 @@ class Compiler(object):
 
     def compileExpressionList(self):
         self.open_tag('expressionList')
-        has_next = True
+        has_next = (self.current_line.find(')') == -1)
         while has_next:
             self.compileExpression()
             has_next = False
