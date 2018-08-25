@@ -7,6 +7,7 @@ UNARY_OPERATIONS = ['-', '~']
 
 class Compiler(object):
     def __init__(self, file_address, compile_address):
+        self.here = False
         self.file_object = open(file_address, 'rb')
         self.compiled = open(compile_address, 'wb')
         first_line = self.advance()
@@ -62,7 +63,7 @@ class Compiler(object):
         while self.words_exist(['keyword', 'static']) or self.words_exist(['keyword', 'field']):
             self.compileClassVarDec()
 
-        while self.words_exist(['keyword', 'function']):
+        while self.words_exist(['keyword', 'function']) or self.words_exist(['keyword', 'constructor']) or self.words_exist(['keyword', 'method']):
             self.compileSubroutine()
 
         if self.words_exist(['symbol', '}']):
@@ -74,11 +75,40 @@ class Compiler(object):
         self.close_tag("class")
 
     def compileClassVarDec(self):
-        pass
+        self.open_tag("classVarDec")
+
+        if self.words_exist(['keyword', 'static']) or self.words_exist(['keyword', 'field']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['int']) or self.words_exist(['char']) or self.words_exist(['boolean']) or self.words_exist(['identifier']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if self.words_exist(['identifier']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        has_next = lambda: self.current_line.find(',') != -1
+        while has_next():
+            if self.words_exist(['symbol', ',']):
+                self.format_and_write_line()
+                self.advance()
+            if self.words_exist(['identifier']):
+                self.format_and_write_line()
+                self.advance()
+        if self.words_exist(['symbol', ';']):
+            self.format_and_write_line()
+            self.advance()
+
+        self.close_tag('classVarDec')
+
 
     def compileSubroutine(self):
         self.open_tag("subroutineDec")
-
         if self.words_exist(['keyword', 'constructor']) or self.words_exist(['keyword', 'function']) or self.words_exist(['keyword', 'method']):
             self.format_and_write_line()
             self.advance()
@@ -101,7 +131,7 @@ class Compiler(object):
         else:
             raise
         # no raise needed here cause its optional
-        if self.words_exist(['identifier']): # we have parameters
+        if self.words_exist(['keyword']): # we have parameters
             self.compileParameterList()
         else:
             self.open_tag('parameterList')
@@ -119,7 +149,7 @@ class Compiler(object):
 
         has_next = True
         while has_next:
-            if self.words_exist(['identifier']) or words_exist(['keyword']):
+            if self.words_exist(['identifier']) or self.words_exist(['keyword']):
                 self.format_and_write_line()
                 self.advance()
             else:
@@ -227,7 +257,7 @@ class Compiler(object):
             self.format_and_write_line()
             self.advance()
             self.compileExpressionList()
-            if words_exist(['symbol', ')']):
+            if self.words_exist(['symbol', ')']):
                 self.format_and_write_line()
                 self.advance()
         elif self.words_exist(['symbol', '.']):
@@ -355,6 +385,7 @@ class Compiler(object):
         else:
             raise
         if self.words_exist(['else', 'keyword']):
+            self.here = True
             self.format_and_write_line()
             self.advance()
             if self.words_exist(['symbol', '{']):
@@ -382,6 +413,7 @@ class Compiler(object):
 
         self.open_tag('expression')
         self.compileTerm()
+
         while get_condition():
             self.format_and_write_line()
             self.advance()

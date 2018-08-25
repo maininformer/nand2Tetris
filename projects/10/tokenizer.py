@@ -73,7 +73,7 @@ class Tokenizer(object):
             self.has_more_tokens = False
         else:
             # remove comments
-            temp = re.sub(r'//.*|/\*.*|/\*\*.*|\*.*', '', temp)
+            temp = re.sub(r'//.*|/\*.*|/\*\*.*|^ \*.*', '', temp)
             # wrap symbols with whitespace
             for symbol in self.symbols:
                 temp = Tokenizer.add_white_space_around(temp, symbol)
