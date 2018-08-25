@@ -253,24 +253,30 @@ class Compiler(object):
         self.open_tag('letStatement')
         if self.words_exist(['keyword', 'let']):
             self.format_and_write_line()
+            self.advance()
         if self.words_exist(['identifier']):
             self.format_and_write_line()
+            self.advance()
         else:
             raise
         if self.words_exist(['symbol', '[']):
             self.format_and_write_line()
+            self.advance()
             self.compileExpression()
             if self.words_exist(['symbol', ']']):
                 self.format_and_write_line()
+                self.advance()
             else:
                 raise
         if self.words_exist(['symbol', '=']):
             self.format_and_write_line()
+            self.advance()
         else:
             raise
         self.compileExpression()
         if self.words_exist(['symbol', ';']):
             self.format_and_write_line()
+            self.advance()
         else:
             raise
         self.close_tag('letStatement')
@@ -279,29 +285,47 @@ class Compiler(object):
         self.open_tag('whileStatement')
         if self.words_exist(['while', 'keyword']):
             self.format_and_write_line()
+            self.advance()
         else:
             raise
         if self.words_exist(['symbol', '(']):
             self.format_and_write_line()
+            self.advance()
         else:
             raise
         self.compileExpression()
         if self.words_exist(['symbol', ')']):
             self.format_and_write_line()
+            self.advance()
         else:
             raise
         if self.words_exist(['symbol', '{']):
             self.format_and_write_line()
+            self.advance()
         else:
             raise
         self.compileStatements()
         if self.words_exist(['symbol', '}']):
             self.format_and_write_line()
+            self.advance()
         else:
             raise
         self.close_tag('whileStatement')
 
     def compileReturn(self):
+        self.open_tag('returnStatement')
+        if self.words_exist(['return', 'keyword']):
+            self.format_and_write_line()
+            self.advance()
+        else:
+            raise
+        if not self.words_exist([';']):
+            self.compileExpression()
+        if self.words_exist([';', 'symbol']):
+            self.format_and_write_line()
+            self.advance()
+
+        self.close_tag('returnStatement')
 
     def compileIf(self):
         pass
