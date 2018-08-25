@@ -210,7 +210,7 @@ class Compiler(object):
             self.advance()
         else:
             raise
-        if self.words_exist(['identifier')]:
+        if self.words_exist(['identifier']):
             self.compileSubroutineCall()
         if self.words_exist(['symbol',';']):
             self.format_and_write_line()
@@ -374,38 +374,38 @@ class Compiler(object):
     def compileExpression(self):
         self.open_tag('expression')
         self.compileTerm()
-        while self.word_exists(OPERATIONS):
+        while self.words_exist(OPERATIONS):
             self.format_and_write_line()
             self.advance()
             self.compileTerm()
         self.close_tag('expression')
     def compileTerm(self):
         self.open_tag('term')
-        if self.word_exists(['integerConstant']) or self.word_exists(['stringConstant']) or self.word_exists(KEYWORD_CONSTANTS):
+        if self.words_exist(['integerConstant']) or self.words_exist(['stringConstant']) or self.words_exist(KEYWORD_CONSTANTS):
             self.format_and_write_line()
-        elif self.word_exists(['identifier']):
+        elif self.words_exist(['identifier']):
             # if there is a [ next
-            if self.word_exists(['symbol', '[']):
+            if self.words_exist(['symbol', '[']):
                 self.format_and_write_line()
                 self.compileExpression()
-                if self.word_exists(['symbol', ']']):
+                if self.words_exist(['symbol', ']']):
                     self.format_and_write_line()
                 else:
                     raise
             # if there is a ( next subroutine call
-            elif self.word_exists(['(']):
+            elif self.words_exist(['(']):
                 self.compileSubroutineCall(identifier_compiled=True)
 
             else:
                 raise
-        elif self.word_exists(['(', 'symbol']):
+        elif self.words_exist(['(', 'symbol']):
             self.format_and_write_line()
             self.compileExpression()
-            if self.word_exists([')', 'symbol']):
+            if self.words_exist([')', 'symbol']):
                 self.format_and_write_line()
             else:
                 raise
-        elif self.word_exists(UNARY_OPERATIONS):
+        elif self.words_exist(UNARY_OPERATIONS):
             self.format_and_write_line()
             self.compileTerm()
         else:

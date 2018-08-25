@@ -32,3 +32,10 @@
         <identifier> sum </identifier>
         <symbol> ; </symbol>
       <\varDec>
+      <statement>
+        <letStatement>
+          <keyword> let </keyword>
+          <identifier> length </identifier>
+          <symbol> = </symbol>
+          <expression>
+            <term>
