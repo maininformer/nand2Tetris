@@ -250,7 +250,31 @@ class Compiler(object):
             raise
 
     def compileLet(self):
-        pass
+        self.open_tag('letStatement')
+        if self.words_exist(['keyword', 'let']):
+            self.format_and_write_line()
+        if self.words_exist(['identifier']):
+            self.format_and_write_line()
+        else:
+            raise
+        if self.words_exist(['symbol', '[']):
+            self.format_and_write_line()
+            self.compileExpression()
+            if self.words_exist(['symbol', ']']):
+                self.format_and_write_line()
+            else:
+                raise
+        if self.words_exist(['symbol', '=']):
+            self.format_and_write_line()
+        else:
+            raise
+        self.compileExpression()
+        if self.words_exist(['symbol', ';']):
+            self.format_and_write_line()
+        else:
+            raise
+        self.close_tag('letStatement')
+
     def compileWhile(self):
         pass
     def compileReturn(self):
@@ -294,12 +318,9 @@ class Compiler(object):
         elif self.word_exists(UNARY_OPERATIONS):
             self.format_and_write_line()
             self.compileTerm()
-
         else:
             raise
         self.close_tag('term')
-
-
 
     def compileExpressionList(self):
         self.open_tag('expressionList')
