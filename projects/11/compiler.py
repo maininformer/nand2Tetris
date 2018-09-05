@@ -14,6 +14,8 @@ class Compiler(object):
         self.current_line = first_line
         self.nest_level = 0
 
+        self.SYMBOL_TABLE = {}
+
     def format_and_write_line(self):
        return self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2, self.current_line))
 
