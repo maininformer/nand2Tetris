@@ -5,18 +5,17 @@ UNARY_OPERATIONS = ['-', '~']
 
 class SymbolTable(object):
     def __init__(self):
-        class_scope= {}
-        subroutine_scope = {}
-        class_index = 0
-        subroutine_index = 0
+        self.class_scope= {}
+        self.subroutine_scope = {}
+        self.class_index = 0
+        self.subroutine_index = 0
 
     def start_subroutine(self):
         self.subroutine_scope = {}
         self.subroutine_index = 0
 
     def define(self, name, type_, kind):
-        assert kind in ('STATIC', 'FIELD', 'ARG', 'VAR')
-
+        kind = kind.upper()
         if kind in ('STATIC', 'FIELD'):
             self.class_scope[name] = {'type': type_, 'kind': kind, 'index': self.class_index}
             self.class_index += 1
@@ -29,27 +28,27 @@ class SymbolTable(object):
         if kind in ('STATIC', 'FIELD'):
             return len(filter(lambda x: x['kind'] == kind, self.class_scope.values()))
         elif kind in ('ARG', 'VAR'):
-            return len(filter(lambda x:x['kind'] == kind, self.subroutine_scope.values())
+            return len(filter(lambda x:x['kind'] == kind, self.subroutine_scope.values()))
 
     def kind_of(self, name):
-        if name in subroutine_scope:
-            return subroutine_scope[name]['kind']
-        elif name in class_scope:
-            return class_scope[name]['kind']
+        if name in self.subroutine_scope:
+            return self.subroutine_scope[name]['kind']
+        elif name in self.class_scope:
+            return self.class_scope[name]['kind']
         else:
             return None
 
     def type_of(self, name):
-        if name in subroutine_scope:
-            return subroutine_scope[name]['type_']
-        elif name in class_scope:
-            return class_scope[name]['type_']
+        if name in self.subroutine_scope:
+            return self.subroutine_scope[name]['type_']
+        elif name in self.class_scope:
+            return self.class_scope[name]['type_']
 
     def index_of(self, name):
-        if name in subroutine_scope:
-            return subroutine_scope[name]['index']
-        elif name in class_scope:
-            return class_scope[name]['index']
+        if name in self.subroutine_scope:
+            return self.subroutine_scope[name]['index']
+        elif name in self.class_scope:
+            return self.class_scope[name]['index']
 
 
 class Compiler(object):
@@ -69,9 +68,9 @@ class Compiler(object):
        end = line.find('</')
        return line[start+1:end-1] # + and - for spaces wrapping the value
 
-    def format_and_write_line(self, **kwargs):
-       if kwargs:
-           return self.compiled.write("{0}{1}{2}\n".format(" "*self.nest_level*2, self.current_line, kwargs))
+    def format_and_write_line(self, dict_=None):
+       if dict_:
+           return self.compiled.write("{0}{1}{2}\n".format(" "*self.nest_level*2, self.current_line, dict_))
        else:
            return self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2, self.current_line))
 
@@ -223,7 +222,7 @@ class Compiler(object):
             if self.words_exist(['identifier']):
                 name = self.get_xml_value()
                 self.SYMBOL_TABLE.define(name, type_, 'ARG')
-                self.format_and_write_line({'category': 'ARG', 'defined':True, 'kind': self.SYMBOL_TABLE.kind_of(name), self.SYMBOLE_TABLE.index_of(name)})
+                self.format_and_write_line({'category': 'ARG', 'defined':True, 'kind': self.SYMBOL_TABLE.kind_of(name), 'index':self.SYMBOL_TABLE.index_of(name)})
                 self.advance()
             else:
                 raise
@@ -360,7 +359,7 @@ class Compiler(object):
             type_ = 'int' # for lack of a better way to get this; the type will be whatever the expression returns
             kind = 'VAR'
             self.SYMBOL_TABLE.define(name, type_, kind)
-            self.format_and_write_line({'category': 'VAR', 'defined':True, 'kind': self.SYMBOL_TABLE.kind_of(namd), 'index': self.SYMBOL_TABLE.index_of(name)})
+            self.format_and_write_line({'category': 'VAR', 'defined':True, 'kind': self.SYMBOL_TABLE.kind_of(name), 'index': self.SYMBOL_TABLE.index_of(name)})
             self.advance()
         else:
             raise
