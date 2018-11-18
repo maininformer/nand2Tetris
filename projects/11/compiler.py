@@ -3,6 +3,53 @@ KEYWORD_CONSTANTS = ['true', 'false', 'null', 'this']
 OPERATIONS = ['+', '-', '*', '/', '&', '|', '&lt;', '&gt;', '=']
 UNARY_OPERATIONS = ['-', '~']
 
+class SymbolTable(object):
+    def __init__(self):
+        class_scope= {}
+        subroutine_scope = {}
+        class_index = 0
+        subroutine_index = 0
+
+    def start_subroutine(self):
+        self.subroutine_scope = {}
+        self.subroutine_index = 0
+
+    def define(self, name, type_, kind):
+        assert kind in ('STATIC', 'FIELD', 'ARG', 'VAR')
+
+        if kind in ('STATIC', 'FIELD'):
+            self.class_scope['name'] = {'type': type_, 'kind': kind, 'index': self.class_index}
+            self.class_index += 1
+        elif kind in ('ARG', 'VAR'):
+            self.subroutine_scope['name'] = {'type': type_, 'kind': kind, 'index': self.subroutine_index}
+            self.subroutine_index += 1
+
+    def var_count(self, kind):
+        assert kind in ('STATIC', 'FIELD', 'ARG', 'VAR')
+        if kind in ('STATIC', 'FIELD'):
+            return len(filter(lambda x: x['kind'] == kind, self.class_scope.values()))
+        elif kind in ('ARG', 'VAR'):
+            return len(filter(lambda x:x['kind'] == kind, self.subroutine_scope.values())
+
+    def kind_of(self, name):
+        if name in subroutine_scope:
+            return subroutine_scope['name']['kind']
+        elif name in class_scope:
+            return class_scope['name']['kind']
+        else:
+            return None
+
+    def type_of(self, name):
+        if name in subroutine_scope:
+            return subroutine_scope['name']['type_']
+        elif name in class_scope:
+            return class_scope['name']['type_']
+
+    def index_of(self, name):
+        if name in subroutine_scope:
+            return subroutine_scope['name']['index']
+        elif name in class_scope:
+            return class_scope['name']['index']
 
 
 class Compiler(object):
