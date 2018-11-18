@@ -18,10 +18,10 @@ class SymbolTable(object):
         assert kind in ('STATIC', 'FIELD', 'ARG', 'VAR')
 
         if kind in ('STATIC', 'FIELD'):
-            self.class_scope['name'] = {'type': type_, 'kind': kind, 'index': self.class_index}
+            self.class_scope[name] = {'type': type_, 'kind': kind, 'index': self.class_index}
             self.class_index += 1
         elif kind in ('ARG', 'VAR'):
-            self.subroutine_scope['name'] = {'type': type_, 'kind': kind, 'index': self.subroutine_index}
+            self.subroutine_scope[name] = {'type': type_, 'kind': kind, 'index': self.subroutine_index}
             self.subroutine_index += 1
 
     def var_count(self, kind):
@@ -33,23 +33,23 @@ class SymbolTable(object):
 
     def kind_of(self, name):
         if name in subroutine_scope:
-            return subroutine_scope['name']['kind']
+            return subroutine_scope[name]['kind']
         elif name in class_scope:
-            return class_scope['name']['kind']
+            return class_scope[name]['kind']
         else:
             return None
 
     def type_of(self, name):
         if name in subroutine_scope:
-            return subroutine_scope['name']['type_']
+            return subroutine_scope[name]['type_']
         elif name in class_scope:
-            return class_scope['name']['type_']
+            return class_scope[name]['type_']
 
     def index_of(self, name):
         if name in subroutine_scope:
-            return subroutine_scope['name']['index']
+            return subroutine_scope[name]['index']
         elif name in class_scope:
-            return class_scope['name']['index']
+            return class_scope[name]['index']
 
 
 class Compiler(object):
@@ -61,10 +61,19 @@ class Compiler(object):
         self.current_line = first_line
         self.nest_level = 0
 
-        self.SYMBOL_TABLE = {}
+        self.SYMBOL_TABLE = SymbolTable()
 
-    def format_and_write_line(self):
-       return self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2, self.current_line))
+    def get_xml_value(self):
+       line = self.current_line
+       start = line.find('>')
+       end = line.find('</')
+       return line[start+1:end-1] # + and - for spaces wrapping the value
+
+    def format_and_write_line(self, **kwargs):
+       if kwargs:
+           return self.compiled.write("{0}{1}{2}\n".format(" "*self.nest_level*2, self.current_line, kwargs))
+       else:
+           return self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2, self.current_line))
 
     def words_exist(self, words):
         for word in words:
@@ -99,7 +108,7 @@ class Compiler(object):
         else:
             raise
         if self.words_exist(['identifier']): # gotta regex for the name too
-            self.format_and_write_line()
+            self.format_and_write_line({'category': 'class', 'defined': True, 'kind':None, 'index': None})
             self.advance()
         else:
             raise
@@ -128,16 +137,20 @@ class Compiler(object):
 
         if self.words_exist(['keyword', 'static']) or self.words_exist(['keyword', 'field']):
             self.format_and_write_line()
+            kind = self.get_xml_value()
             self.advance()
         else:
             raise
         if self.words_exist(['int']) or self.words_exist(['char']) or self.words_exist(['boolean']) or self.words_exist(['identifier']):
+            type_ = self.get_xml_value()
             self.format_and_write_line()
             self.advance()
         else:
             raise
         if self.words_exist(['identifier']):
-            self.format_and_write_line()
+            name = self.get_xml_value()
+            self.SYMBOL_TABLE.define(name, type_, kind)
+            self.format_and_write_line({'category': kind, 'defined': True, 'kind':kind, 'index': self.SYMBOL_TABLE.index_of(name)})
             self.advance()
         else:
             raise
@@ -147,7 +160,9 @@ class Compiler(object):
                 self.format_and_write_line()
                 self.advance()
             if self.words_exist(['identifier']):
-                self.format_and_write_line()
+                name = self.get_xml_value()
+                self.SYMBOL_TABLE.define(name, type_, kind)
+                self.format_and_write_line({'category': kind, 'defined': True, 'kind':kind, 'index': self.SYMBOL_TABLE.index_of(name)})
                 self.advance()
         if self.words_exist(['symbol', ';']):
             self.format_and_write_line()
@@ -158,6 +173,7 @@ class Compiler(object):
 
     def compileSubroutine(self):
         self.open_tag("subroutineDec")
+        self.SYMBOL_TABLE.start_subroutine()
         if self.words_exist(['keyword', 'constructor']) or self.words_exist(['keyword', 'function']) or self.words_exist(['keyword', 'method']):
             self.format_and_write_line()
             self.advance()
@@ -170,7 +186,7 @@ class Compiler(object):
         else:
             raise
         if self.words_exist(['identifier']):
-            self.format_and_write_line()
+            self.format_and_write_line({'category': 'subroutine', 'defined': True, 'kind':None, 'index': None})
             self.advance()
         else:
             raise
@@ -199,12 +215,15 @@ class Compiler(object):
         has_next = True
         while has_next:
             if self.words_exist(['identifier']) or self.words_exist(['keyword']):
+                type_ = self.get_xml_value()
                 self.format_and_write_line()
                 self.advance()
             else:
                 raise
             if self.words_exist(['identifier']):
-                self.format_and_write_line()
+                name = self.get_xml_value()
+                self.SYMBOL_TABLE.define(name, type_, 'ARG')
+                self.format_and_write_line({'category': 'ARG', 'defined':True, 'kind': self.SYMBOL_TABLE.kind_of(name), self.SYMBOLE_TABLE.index_of(name)})
                 self.advance()
             else:
                 raise
@@ -243,6 +262,7 @@ class Compiler(object):
         else:
             raise
         if self.words_exist(['keyword']) or self.words_exist(['identifier']):
+            type_=self.get_xml_value()
             self.format_and_write_line()
             self.advance()
         else:
@@ -250,7 +270,9 @@ class Compiler(object):
         has_next = True
         while has_next:
             if self.words_exist(['identifier']):
-                self.format_and_write_line()
+                name = self.get_xml_value()
+                self.SYMBOL_TABLE.define(name, type_, 'VAR')
+                self.format_and_write_line({'category': 'VAR', 'defined': True, 'kind': self.SYMBOL_TABLE.kind_of(name), 'index': self.SYMBOL_TABLE.index_of(name)})
                 self.advance()
                 has_next = False
             if self.words_exist(['symbol', ',']):
@@ -298,8 +320,9 @@ class Compiler(object):
 
     def compileSubroutineCall(self, identifier_compiled = False):
         # no tags
+        # subroutineName, varName|className
         if self.words_exist(['identifier']) and not identifier_compiled:
-            self.format_and_write_line()
+            self.format_and_write_line({'category': 'subroutine', 'defined': False, 'kind': None, 'index':None})
             self.advance()
         if self.words_exist(['symbol','(']):
             # subroutine call
@@ -313,7 +336,7 @@ class Compiler(object):
             self.format_and_write_line()
             self.advance()
             if self.words_exist(['identifier']):
-                self.format_and_write_line()
+                self.format_and_write_line({'category': 'subroutine', 'defined':False, 'kind':None, 'index':None})
                 self.advance()
             if self.words_exist(['symbol','(']):
                 # subroutine call
@@ -333,7 +356,11 @@ class Compiler(object):
             self.format_and_write_line()
             self.advance()
         if self.words_exist(['identifier']):
-            self.format_and_write_line()
+            name = self.get_xml_value()
+            type_ = 'int' # for lack of a better way to get this; the type will be whatever the expression returns
+            kind = 'VAR'
+            self.SYMBOL_TABLE.define(name, type_, kind)
+            self.format_and_write_line({'category': 'VAR', 'defined':True, 'kind': self.SYMBOL_TABLE.kind_of(namd), 'index': self.SYMBOL_TABLE.index_of(name)})
             self.advance()
         else:
             raise
@@ -484,7 +511,10 @@ class Compiler(object):
             self.format_and_write_line()
             self.advance()
         elif self.words_exist(['identifier']):
-            self.format_and_write_line()
+            name = self.get_xml_value()
+            kind = self.SYMBOL_TABLE.kind_of(name)
+            index = self.SYMBOL_TABLE.index_of(name)
+            self.format_and_write_line({'category': None, 'defined':False, 'kind':kind, 'index':index})
             self.advance()
             # if there is a [ next
             if self.words_exist(['symbol', '[']):
