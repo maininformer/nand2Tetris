@@ -6,6 +6,7 @@ from compiler import Compiler
 DIRECTORY_NAME = 'Square'
 SRC_SUFFIX = 'jack'
 TOKENIZED_SUFFIX = 'xml'
+VM_SUFFIX = 'vm'
 
 if __name__ == '__main__':
     READ_PATH = '{0}/'.format(DIRECTORY_NAME)
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     tokenized_files = [f for f in listdir(READ_PATH_2) if f.find('T.{}'.format(TOKENIZED_SUFFIX)) != -1]
     for f in tokenized_files:
         COMPILE_PATH_1 = './compiled/{0}/{1}'.format(DIRECTORY_NAME, f)
-        COMPILE_PATH_2 = './compiled/{0}/{1}.{2}'.format(DIRECTORY_NAME, f.split('T.')[0], TOKENIZED_SUFFIX)
+        COMPILE_PATH_2 = './compiled/{0}/{1}.{2}'.format(DIRECTORY_NAME, f.split('T.')[0], VM_SUFFIX)
         compiler = Compiler(COMPILE_PATH_1, COMPILE_PATH_2)
         compiler.compileClass()
 
