@@ -53,39 +53,70 @@ class SymbolTable(object):
 class VMWriter(object):
     @staticmethod
     def write_push(segment, index):
-        pass
+        assert segment in (
+                'CONST',
+                'ARG',
+                'LOCAL',
+                'STATIC',
+                'THIS',
+                'THAT',
+                'POINTER',
+                'TEMP'
+        )
+        return 'push {0} {1}'.format(segment, index)
 
     @staticmethod
     def write_pop(segment, index):
-        pass
+        assert segment in (
+                'CONST',
+                'ARG',
+                'LOCAL',
+                'STATIC',
+                'THIS',
+                'THAT',
+                'POINTER',
+                'TEMP'
+        )
+        return 'pop {0} {1}'.format(segment, index)
 
     @staticmethod
     def write_arithmetic(command):
-        pass
+        assert command in (
+                'ADD',
+                'SUB',
+                'NEG',
+                'EQ',
+                'GT',
+                'LT',
+                'AND',
+                'OR',
+                'NOT'
+        )
+        return '{0}'.format(command)
 
     @staticmethod
-    def write_label(lable):
-        pass
+    def write_label(label):
+        return 'label {0}'.format(label)
 
     @staticmethod
     def write_go_to(label):
-        pass
+        return 'goto {0}'.format(label)
 
     @staticmethod
     def write_if(label):
-        pass
+        return 'if-goto {0}'format(label)
 
     @staticmethod
     def write_call(name, n_args):
-        pass
+        return 'call {0} {1}'.format(name, n_args)
 
     @staticmethod
     def write_function(name, n_locals):
-        pass
+        return 'function {0} {1}'.format(name, n_locals)
 
     @staticmethod
     def write_return():
-        pass
+        return 'return'
 
 
 class Compiler(object):
