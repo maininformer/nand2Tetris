@@ -50,6 +50,43 @@ class SymbolTable(object):
         elif name in self.class_scope:
             return self.class_scope[name]['index']
 
+class VMWriter(object):
+    @staticmethod
+    def write_push(segment, index):
+        pass
+
+    @staticmethod
+    def write_pop(segment, index):
+        pass
+
+    @staticmethod
+    def write_arithmetic(command):
+        pass
+
+    @staticmethod
+    def write_label(lable):
+        pass
+
+    @staticmethod
+    def write_go_to(label):
+        pass
+
+    @staticmethod
+    def write_if(label):
+        pass
+
+    @staticmethod
+    def write_call(name, n_args):
+        pass
+
+    @staticmethod
+    def write_function(name, n_locals):
+        pass
+
+    @staticmethod
+    def write_return():
+        pass
+
 
 class Compiler(object):
     def __init__(self, file_address, compile_address):
