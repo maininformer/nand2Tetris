@@ -1,3 +1,4 @@
+from pdb import set_trace as plum
 KEYWORD_CONSTANTS = ['true', 'false', 'null', 'this']
 # TODO: potentially gotta replace & with &amp;
 OPERATIONS = ['+', '-', '*', '/', '&', '|', '&lt;', '&gt;', '=']
@@ -5,10 +6,12 @@ UNARY_OPERATIONS = ['-', '~']
 
 class SymbolTable(object):
     def __init__(self):
-        self.class_scope= {}
+        self.class_scope={}
         self.subroutine_scope = {}
         self.class_index = 0
         self.subroutine_index = 0
+        self.class_name = None
+        self.subroutine_name = None
 
     def start_subroutine(self):
         self.subroutine_scope = {}
@@ -53,8 +56,8 @@ class SymbolTable(object):
 class VMWriter(object):
     @staticmethod
     def write_push(segment, index):
-        assert segment in (
-                'CONST',
+        assert segment.upper() in (
+                'CONSTANT',
                 'ARG',
                 'LOCAL',
                 'STATIC',
@@ -63,7 +66,7 @@ class VMWriter(object):
                 'POINTER',
                 'TEMP'
         )
-        return 'push {0} {1}'.format(segment, index)
+        return 'push {0} {1}\n'.format(segment.lower(), index)
 
     @staticmethod
     def write_pop(segment, index):
@@ -77,70 +80,74 @@ class VMWriter(object):
                 'POINTER',
                 'TEMP'
         )
-        return 'pop {0} {1}'.format(segment, index)
+        return 'pop {0} {1}\n'.format(segment, index)
 
     @staticmethod
     def write_arithmetic(command):
-        assert command in (
-                'ADD',
-                'SUB',
-                'NEG',
-                'EQ',
-                'GT',
-                'LT',
-                'AND',
-                'OR',
-                'NOT'
-        )
-        return '{0}'.format(command)
+        mapping = {
+            '+': 'add',
+            '*': 'call Math.multiply 2',
+            '-': 'sub',
+            '/': 'call Math.divide 2',
+            '=': 'eq',
+            '>': 'gt',
+            '<': 'lt',
+            '&': 'and',
+            '|': 'or',
+            '-': 'neg',
+            '~': 'not'
+        }
+        assert command in mapping
+        return '{0}\n'.format(mapping[command])
 
     @staticmethod
     def write_label(label):
-        return 'label {0}'.format(label)
+        return 'label {0}\n'.format(label)
 
     @staticmethod
     def write_go_to(label):
-        return 'goto {0}'.format(label)
+        return 'goto {0}\n'.format(label)
 
     @staticmethod
     def write_if(label):
-        return 'if-goto {0}'format(label)
+        return 'if-goto {0}\n'.format(label)
 
     @staticmethod
     def write_call(name, n_args):
-        return 'call {0} {1}'.format(name, n_args)
+        return 'call {0} {1}\n'.format(name, n_args)
 
     @staticmethod
     def write_function(name, n_locals):
-        return 'function {0} {1}'.format(name, n_locals)
+        return 'function {0} {1}\n'.format(name, n_locals)
 
     @staticmethod
     def write_return():
-        return 'return'
+        return 'return\n'
 
 
 class Compiler(object):
-    def __init__(self, file_address, compile_address):
+    def __init__(self, file_address, compile_address, vm=False):
         self.here = False
         self.file_object = open(file_address, 'rb')
         self.compiled = open(compile_address, 'wb')
         first_line = self.advance()
         self.current_line = first_line
         self.nest_level = 0
-
+        self.vm = vm
         self.SYMBOL_TABLE = SymbolTable()
 
     def get_xml_value(self):
        line = self.current_line
        start = line.find('>')
        end = line.find('</')
-       return line[start+1:end-1] # + and - for spaces wrapping the value
+       return line[start+1:end-1].strip() # + and - for spaces wrapping the value
 
     def format_and_write_line(self, dict_=None):
-       if dict_:
-           return self.compiled.write("{0}{1}{2}\n".format(" "*self.nest_level*2, self.current_line, dict_))
-       else:
-           return self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2, self.current_line))
+        if not self.vm:
+            if dict_:
+                return self.compiled.write("{0}{1}{2}\n".format(" "*self.nest_level*2, self.current_line, dict_))
+            else:
+                return self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2, self.current_line))
 
     def words_exist(self, words):
         for word in words:
@@ -151,12 +158,14 @@ class Compiler(object):
         return True
 
     def open_tag(self, tag_name):
-        self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2,"<{}>".format(tag_name)))
-        self.nest_level += 1
+        if not self.vm:
+            self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2,"<{}>".format(tag_name)))
+            self.nest_level += 1
 
     def close_tag(self, tag_name):
-        self.nest_level -= 1
-        self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2,"</{}>".format(tag_name)))
+        if not self.vm:
+            self.nest_level -= 1
+            self.compiled.write("{0}{1}\n".format(" "*self.nest_level*2,"</{}>".format(tag_name)))
 
     def advance(self):
         new_line = self.file_object.readline()
@@ -176,6 +185,7 @@ class Compiler(object):
             raise
         if self.words_exist(['identifier']): # gotta regex for the name too
             self.format_and_write_line({'category': 'class', 'defined': True, 'kind':None, 'index': None})
+            self.SYMBOL_TABLE.class_name = self.get_xml_value()
             self.advance()
         else:
             raise
@@ -254,6 +264,11 @@ class Compiler(object):
             raise
         if self.words_exist(['identifier']):
             self.format_and_write_line({'category': 'subroutine', 'defined': True, 'kind':None, 'index': None})
+            self.SYMBOL_TABLE.subroutine_name = self.get_xml_value()
+            if self.SYMBOL_TABLE.subroutine_name == 'main' and self.SYMBOL_TABLE.class_name == 'Main':
+                self.compiled.write(
+                VMWriter.write_function('Main.main', '0')
+            )
             self.advance()
         else:
             raise
@@ -383,6 +398,9 @@ class Compiler(object):
             self.format_and_write_line()
             self.advance()
 
+        self.compiled.write(
+            VMWriter.write_call(self.SYMBOL_TABLE.subroutine_name, self.SYMBOL_TABLE.subroutine_index)
+        )
         self.close_tag('doStatement')
 
     def compileSubroutineCall(self, identifier_compiled = False):
@@ -390,6 +408,7 @@ class Compiler(object):
         # subroutineName, varName|className
         if self.words_exist(['identifier']) and not identifier_compiled:
             self.format_and_write_line({'category': 'subroutine', 'defined': False, 'kind': None, 'index':None})
+            self.SYMBOL_TABLE.subroutine_name = self.get_xml_value()
             self.advance()
         if self.words_exist(['symbol','(']):
             # subroutine call
@@ -401,9 +420,11 @@ class Compiler(object):
                 self.advance()
         elif self.words_exist(['symbol', '.']):
             self.format_and_write_line()
+            self.SYMBOL_TABLE.subroutine_name += '.'
             self.advance()
             if self.words_exist(['identifier']):
                 self.format_and_write_line({'category': 'subroutine', 'defined':False, 'kind':None, 'index':None})
+                self.SYMBOL_TABLE.subroutine_name += self.get_xml_value()
                 self.advance()
             if self.words_exist(['symbol','(']):
                 # subroutine call
@@ -488,6 +509,9 @@ class Compiler(object):
         self.open_tag('returnStatement')
         if self.words_exist(['return', 'keyword']):
             self.format_and_write_line()
+            self.compiled.write(
+                VMWriter.write_return()
+            )
             self.advance()
         else:
             raise
@@ -559,8 +583,12 @@ class Compiler(object):
 
         while get_condition():
             self.format_and_write_line()
+            symbol = self.get_xml_value()
             self.advance()
             self.compileTerm()
+            self.compiled.write(
+                VMWriter.write_arithmetic(symbol)
+            )
         self.close_tag('expression')
 
     def compileTerm(self):
@@ -576,6 +604,9 @@ class Compiler(object):
         self.open_tag('term')
         if self.words_exist(['integerConstant']) or self.words_exist(['stringConstant']) or get_condition():
             self.format_and_write_line()
+            self.compiled.write(
+                VMWriter.write_push('constant', self.get_xml_value())
+            )
             self.advance()
         elif self.words_exist(['identifier']):
             name = self.get_xml_value()
@@ -619,6 +650,7 @@ class Compiler(object):
         has_next = (self.current_line.find(')') == -1)
         while has_next:
             self.compileExpression()
+            self.SYMBOL_TABLE.subroutine_index += 1
             has_next = False
             if self.words_exist([',']):
                 self.format_and_write_line()

@@ -1,0 +1,63 @@
+<class>
+  <keyword> class </keyword>
+  <identifier> Main </identifier>{'category': 'class', 'defined': True, 'kind': None, 'index': None}
+  <symbol> { </symbol>
+  <subroutineDec>
+    <keyword> function </keyword>
+    <keyword> void </keyword>
+    <identifier> main </identifier>{'category': 'subroutine', 'defined': True, 'kind': None, 'index': None}
+function Main.main 0
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <identifier> Output </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
+          <symbol> . </symbol>
+          <identifier> printInt </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <integerConstant> 1 </integerConstant>
+push constant 1
+              </term>
+              <symbol> + </symbol>
+              <term>
+                <symbol> ( </symbol>
+                <expression>
+                  <term>
+                    <integerConstant> 2 </integerConstant>
+push constant 2
+                  </term>
+                  <symbol> * </symbol>
+                  <term>
+                    <integerConstant> 3 </integerConstant>
+push constant 3
+                  </term>
+call Math.multiply 2
+                </expression>
+                <symbol> ) </symbol>
+              </term>
+add
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+call Output.printInt 1
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+return
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <symbol> } </symbol>
+</class>
