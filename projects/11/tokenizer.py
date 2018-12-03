@@ -73,7 +73,7 @@ class Tokenizer(object):
             self.has_more_tokens = False
         else:
             # remove comments
-            temp = re.sub(r'//.*|/\*.*|/\*\*.*|^ \*.*', '', temp)
+            temp = re.sub(r'//.*|/\*.*|/\*\*.*|^[ \t]+\*.*', '', temp)
             # wrap symbols with whitespace
             for symbol in self.symbols:
                 temp = Tokenizer.add_white_space_around(temp, symbol)
@@ -101,9 +101,9 @@ class Tokenizer(object):
 
     def convert_symbol(self):
         converter = {
-            '>': '&gt;',
-            '<': '&lt;',
-            '&': '&amp;'
+            '>': '&gt',
+            '<': '&lt',
+            '&': '&amp'
         }
         if self.current_token in converter.keys():
             self.current_token = converter[self.current_token]

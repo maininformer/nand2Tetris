@@ -90,9 +90,9 @@ class VMWriter(object):
             '-': 'sub',
             '/': 'call Math.divide 2',
             '=': 'eq',
-            '>': 'gt',
-            '<': 'lt',
-            '&': 'and',
+            '&gt': 'gt',
+            '&lt': 'lt',
+            '&amp': 'and',
             '|': 'or',
             '-': 'neg',
             '~': 'not'
@@ -371,7 +371,7 @@ class Compiler(object):
     def compileStatements(self):
         self.open_tag('statements')
 
-        while self.words_exist(['keyword', 'let']) or self.words_exist(['keyword', 'if']) or self.words_exist(['keyword', 'while']) or self.words_exist(['keyword', 'do'] or self.words_exist(['keyword', 'return'])):
+        while self.words_exist(['keyword', 'let']) or self.words_exist(['keyword', 'if']) or self.words_exist(['keyword', 'while']) or self.words_exist(['keyword', 'do']) or self.words_exist(['keyword', 'return']):
             if self.words_exist(['keyword', 'let']):
                 self.compileLet()
             if self.words_exist(['keyword', 'if']):
