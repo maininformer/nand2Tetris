@@ -1,128 +1,12 @@
 from pdb import set_trace as plum
+
+from .symbol_table import SymbolTable
+from .VMWriter import VMWriter
+
 KEYWORD_CONSTANTS = ['true', 'false', 'null', 'this']
 # TODO: potentially gotta replace & with &amp;
 OPERATIONS = ['+', '-', '*', '/', '&', '|', '&lt;', '&gt;', '=']
 UNARY_OPERATIONS = ['-', '~']
-
-class SymbolTable(object):
-    def __init__(self):
-        self.class_scope={}
-        self.subroutine_scope = {}
-        self.class_index = 0
-        self.subroutine_index = 0
-        self.class_name = None
-        self.subroutine_name = None
-
-    def start_subroutine(self):
-        self.subroutine_scope = {}
-        self.subroutine_index = 0
-
-    def define(self, name, type_, kind):
-        kind = kind.upper()
-        if kind in ('STATIC', 'FIELD'):
-            self.class_scope[name] = {'type': type_, 'kind': kind, 'index': self.class_index}
-            self.class_index += 1
-        elif kind in ('ARG', 'VAR'):
-            self.subroutine_scope[name] = {'type': type_, 'kind': kind, 'index': self.subroutine_index}
-            self.subroutine_index += 1
-
-    def var_count(self, kind):
-        assert kind in ('STATIC', 'FIELD', 'ARG', 'VAR')
-        if kind in ('STATIC', 'FIELD'):
-            return len(filter(lambda x: x['kind'] == kind, self.class_scope.values()))
-        elif kind in ('ARG', 'VAR'):
-            return len(filter(lambda x:x['kind'] == kind, self.subroutine_scope.values()))
-
-    def kind_of(self, name):
-        if name in self.subroutine_scope:
-            return self.subroutine_scope[name]['kind']
-        elif name in self.class_scope:
-            return self.class_scope[name]['kind']
-        else:
-            return None
-
-    def type_of(self, name):
-        if name in self.subroutine_scope:
-            return self.subroutine_scope[name]['type_']
-        elif name in self.class_scope:
-            return self.class_scope[name]['type_']
-
-    def index_of(self, name):
-        if name in self.subroutine_scope:
-            return self.subroutine_scope[name]['index']
-        elif name in self.class_scope:
-            return self.class_scope[name]['index']
-
-class VMWriter(object):
-    @staticmethod
-    def write_push(segment, index):
-        assert segment.upper() in (
-                'CONSTANT',
-                'ARG',
-                'LOCAL',
-                'STATIC',
-                'THIS',
-                'THAT',
-                'POINTER',
-                'TEMP'
-        )
-        return 'push {0} {1}\n'.format(segment.lower(), index)
-
-    @staticmethod
-    def write_pop(segment, index):
-        assert segment in (
-                'CONST',
-                'ARG',
-                'LOCAL',
-                'STATIC',
-                'THIS',
-                'THAT',
-                'POINTER',
-                'TEMP'
-        )
-        return 'pop {0} {1}\n'.format(segment, index)
-
-    @staticmethod
-    def write_arithmetic(command):
-        mapping = {
-            '+': 'add',
-            '*': 'call Math.multiply 2',
-            '-': 'sub',
-            '/': 'call Math.divide 2',
-            '=': 'eq',
-            '&gt': 'gt',
-            '&lt': 'lt',
-            '&amp': 'and',
-            '|': 'or',
-            '-': 'neg',
-            '~': 'not'
-        }
-        assert command in mapping
-        return '{0}\n'.format(mapping[command])
-
-    @staticmethod
-    def write_label(label):
-        return 'label {0}\n'.format(label)
-
-    @staticmethod
-    def write_go_to(label):
-        return 'goto {0}\n'.format(label)
-
-    @staticmethod
-    def write_if(label):
-        return 'if-goto {0}\n'.format(label)
-
-    @staticmethod
-    def write_call(name, n_args):
-        return 'call {0} {1}\n'.format(name, n_args)
-
-    @staticmethod
-    def write_function(name, n_locals):
-        return 'function {0} {1}\n'.format(name, n_locals)
-
-    @staticmethod
-    def write_return():
-        return 'return\n'
 
 
 class Compiler(object):
@@ -186,6 +70,7 @@ class Compiler(object):
         if self.words_exist(['identifier']): # gotta regex for the name too
             self.format_and_write_line({'category': 'class', 'defined': True, 'kind':None, 'index': None})
             self.SYMBOL_TABLE.class_name = self.get_xml_value()
+            self.SYMBOL_TABLE.class_scope[self.get_xml_value()] = []
             self.advance()
         else:
             raise
@@ -266,9 +151,10 @@ class Compiler(object):
             self.format_and_write_line({'category': 'subroutine', 'defined': True, 'kind':None, 'index': None})
             self.SYMBOL_TABLE.subroutine_name = self.get_xml_value()
             if self.SYMBOL_TABLE.subroutine_name == 'main' and self.SYMBOL_TABLE.class_name == 'Main':
-                self.compiled.write(
-                VMWriter.write_function('Main.main', '0')
-            )
+                if self.vm:
+                    self.compiled.write(
+                        VMWriter.write_function('Main.main', '0')
+                    )
             self.advance()
         else:
             raise
@@ -398,9 +284,11 @@ class Compiler(object):
             self.format_and_write_line()
             self.advance()
 
-        self.compiled.write(
-            VMWriter.write_call(self.SYMBOL_TABLE.subroutine_name, self.SYMBOL_TABLE.subroutine_index)
-        )
+        if self.vm:
+            plum()
+            self.compiled.write(
+                VMWriter.write_call(self.SYMBOL_TABLE.subroutine_name, self.SYMBOL_TABLE.subroutine_index)
+            )
         self.close_tag('doStatement')
 
     def compileSubroutineCall(self, identifier_compiled = False):
@@ -509,9 +397,10 @@ class Compiler(object):
         self.open_tag('returnStatement')
         if self.words_exist(['return', 'keyword']):
             self.format_and_write_line()
-            self.compiled.write(
-                VMWriter.write_return()
-            )
+            if self.vm:
+                self.compiled.write(
+                    VMWriter.write_return()
+                )
             self.advance()
         else:
             raise
@@ -586,9 +475,10 @@ class Compiler(object):
             symbol = self.get_xml_value()
             self.advance()
             self.compileTerm()
-            self.compiled.write(
-                VMWriter.write_arithmetic(symbol)
-            )
+            if self.vm:
+                self.compiled.write(
+                    VMWriter.write_arithmetic(symbol)
+                )
         self.close_tag('expression')
 
     def compileTerm(self):
@@ -604,9 +494,10 @@ class Compiler(object):
         self.open_tag('term')
         if self.words_exist(['integerConstant']) or self.words_exist(['stringConstant']) or get_condition():
             self.format_and_write_line()
-            self.compiled.write(
-                VMWriter.write_push('constant', self.get_xml_value())
-            )
+            if self.vm:
+                self.compiled.write(
+                    VMWriter.write_push('constant', self.get_xml_value())
+                )
             self.advance()
         elif self.words_exist(['identifier']):
             name = self.get_xml_value()

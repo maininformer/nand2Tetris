@@ -6,7 +6,6 @@
     <keyword> function </keyword>
     <keyword> void </keyword>
     <identifier> main </identifier>{'category': 'subroutine', 'defined': True, 'kind': None, 'index': None}
-function Main.main 0
     <symbol> ( </symbol>
     <parameterList>
     </parameterList>
@@ -30,14 +29,12 @@ function Main.main 0
             <expression>
               <term>
                 <integerConstant> 8001 </integerConstant>
-push constant 8001
               </term>
             </expression>
             <symbol> , </symbol>
             <expression>
               <term>
                 <integerConstant> 16 </integerConstant>
-push constant 16
               </term>
             </expression>
             <symbol> , </symbol>
@@ -46,14 +43,12 @@ push constant 16
                 <symbol> - </symbol>
                 <term>
                   <integerConstant> 1 </integerConstant>
-push constant 1
                 </term>
               </term>
             </expression>
           </expressionList>
           <symbol> ) </symbol>
           <symbol> ; </symbol>
-call Main.fillMemory 4
         </doStatement>
         <letStatement>
           <keyword> let </keyword>
@@ -69,7 +64,6 @@ call Main.fillMemory 4
                 <expression>
                   <term>
                     <integerConstant> 8000 </integerConstant>
-push constant 8000
                   </term>
                 </expression>
               </expressionList>
@@ -93,11 +87,9 @@ push constant 8000
           </expressionList>
           <symbol> ) </symbol>
           <symbol> ; </symbol>
-call Main.convert 7
         </doStatement>
         <returnStatement>
           <keyword> return </keyword>
-return
           <symbol> ; </symbol>
         </returnStatement>
       </statements>
@@ -138,7 +130,6 @@ return
           <expression>
             <term>
               <keyword> true </keyword>
-push constant true
             </term>
           </expression>
           <symbol> ; </symbol>
@@ -165,9 +156,7 @@ push constant true
                 <symbol> + </symbol>
                 <term>
                   <integerConstant> 1 </integerConstant>
-push constant 1
                 </term>
-add
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -177,358 +166,3 @@ add
               <symbol> = </symbol>
               <expression>
                 <term>
-                  <identifier> Main </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
-                  <symbol> . </symbol>
-                  <identifier> nextMask </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
-                  <symbol> ( </symbol>
-                  <expressionList>
-                    <expression>
-                      <term>
-                        <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': 'VAR', 'index': 6}
-                      </term>
-                    </expression>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                </term>
-              </expression>
-              <symbol> ; </symbol>
-            </letStatement>
-            <ifStatement>
-              <keyword> if </keyword>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <symbol> ~ </symbol>
-                  <term>
-                    <symbol> ( </symbol>
-                    <expression>
-                      <term>
-                        <identifier> position </identifier>{'category': None, 'defined': False, 'kind': 'VAR', 'index': 5}
-                      </term>
-                      <symbol> &gt </symbol>
-                      <term>
-                        <integerConstant> 16 </integerConstant>
-push constant 16
-                      </term>
-gt
-                    </expression>
-                    <symbol> ) </symbol>
-                  </term>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
-              <symbol> { </symbol>
-              <statements>
-                <ifStatement>
-                  <keyword> if </keyword>
-                  <symbol> ( </symbol>
-                  <expression>
-                    <term>
-                      <symbol> ~ </symbol>
-                      <term>
-                        <symbol> ( </symbol>
-                        <expression>
-                          <term>
-                            <symbol> ( </symbol>
-                            <expression>
-                              <term>
-                                <identifier> value </identifier>{'category': None, 'defined': False, 'kind': 'ARG', 'index': 0}
-                              </term>
-                              <symbol> &amp </symbol>
-                              <term>
-                                <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': 'VAR', 'index': 6}
-                              </term>
-and
-                            </expression>
-                            <symbol> ) </symbol>
-                          </term>
-                          <symbol> = </symbol>
-                          <term>
-                            <integerConstant> 0 </integerConstant>
-push constant 0
-                          </term>
-eq
-                        </expression>
-                        <symbol> ) </symbol>
-                      </term>
-                    </term>
-                  </expression>
-                  <symbol> ) </symbol>
-                  <symbol> { </symbol>
-                  <statements>
-                    <doStatement>
-                      <keyword> do </keyword>
-                      <identifier> Memory </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
-                      <symbol> . </symbol>
-                      <identifier> poke </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
-                      <symbol> ( </symbol>
-                      <expressionList>
-                        <expression>
-                          <term>
-                            <integerConstant> 8000 </integerConstant>
-push constant 8000
-                          </term>
-                          <symbol> + </symbol>
-                          <term>
-                            <identifier> position </identifier>{'category': None, 'defined': False, 'kind': 'VAR', 'index': 5}
-                          </term>
-add
-                        </expression>
-                        <symbol> , </symbol>
-                        <expression>
-                          <term>
-                            <integerConstant> 1 </integerConstant>
-push constant 1
-                          </term>
-                        </expression>
-                      </expressionList>
-                      <symbol> ) </symbol>
-                      <symbol> ; </symbol>
-call Memory.poke 10
-                    </doStatement>
-                  </statements>
-                  <symbol> } </symbol>
-                  <keyword> else </keyword>
-                  <symbol> { </symbol>
-                  <statements>
-                    <doStatement>
-                      <keyword> do </keyword>
-                      <identifier> Memory </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
-                      <symbol> . </symbol>
-                      <identifier> poke </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
-                      <symbol> ( </symbol>
-                      <expressionList>
-                        <expression>
-                          <term>
-                            <integerConstant> 8000 </integerConstant>
-push constant 8000
-                          </term>
-                          <symbol> + </symbol>
-                          <term>
-                            <identifier> position </identifier>{'category': None, 'defined': False, 'kind': 'VAR', 'index': 5}
-                          </term>
-add
-                        </expression>
-                        <symbol> , </symbol>
-                        <expression>
-                          <term>
-                            <integerConstant> 0 </integerConstant>
-push constant 0
-                          </term>
-                        </expression>
-                      </expressionList>
-                      <symbol> ) </symbol>
-                      <symbol> ; </symbol>
-call Memory.poke 12
-                    </doStatement>
-                  </statements>
-                  <symbol> } </symbol>
-                </ifStatement>
-              </statements>
-              <symbol> } </symbol>
-              <keyword> else </keyword>
-              <symbol> { </symbol>
-              <statements>
-                <letStatement>
-                  <keyword> let </keyword>
-                  <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 12}
-                  <symbol> = </symbol>
-                  <expression>
-                    <term>
-                      <keyword> false </keyword>
-push constant false
-                    </term>
-                  </expression>
-                  <symbol> ; </symbol>
-                </letStatement>
-              </statements>
-              <symbol> } </symbol>
-            </ifStatement>
-          </statements>
-          <symbol> } </symbol>
-        </whileStatement>
-        <returnStatement>
-          <keyword> return </keyword>
-return
-          <symbol> ; </symbol>
-        </returnStatement>
-      </statements>
-      <symbol> } </symbol>
-    </subroutineBody>
-  </subroutineDec>
-  <subroutineDec>
-    <keyword> function </keyword>
-    <keyword> int </keyword>
-    <identifier> nextMask </identifier>{'category': 'subroutine', 'defined': True, 'kind': None, 'index': None}
-    <symbol> ( </symbol>
-    <parameterList>
-      <keyword> int </keyword>
-      <identifier> mask </identifier>{'category': 'ARG', 'defined': True, 'kind': 'ARG', 'index': 0}
-    </parameterList>
-    <symbol> ) </symbol>
-    <subroutineBody>
-      <symbol> { </symbol>
-      <statements>
-        <ifStatement>
-          <keyword> if </keyword>
-          <symbol> ( </symbol>
-          <expression>
-            <term>
-              <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': 'ARG', 'index': 0}
-            </term>
-            <symbol> = </symbol>
-            <term>
-              <integerConstant> 0 </integerConstant>
-push constant 0
-            </term>
-eq
-          </expression>
-          <symbol> ) </symbol>
-          <symbol> { </symbol>
-          <statements>
-            <returnStatement>
-              <keyword> return </keyword>
-return
-              <expression>
-                <term>
-                  <integerConstant> 1 </integerConstant>
-push constant 1
-                </term>
-              </expression>
-              <symbol> ; </symbol>
-            </returnStatement>
-          </statements>
-          <symbol> } </symbol>
-          <keyword> else </keyword>
-          <symbol> { </symbol>
-          <statements>
-            <returnStatement>
-              <keyword> return </keyword>
-return
-              <expression>
-                <term>
-                  <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': 'ARG', 'index': 0}
-                </term>
-                <symbol> * </symbol>
-                <term>
-                  <integerConstant> 2 </integerConstant>
-push constant 2
-                </term>
-call Math.multiply 2
-              </expression>
-              <symbol> ; </symbol>
-            </returnStatement>
-          </statements>
-          <symbol> } </symbol>
-        </ifStatement>
-      </statements>
-      <symbol> } </symbol>
-    </subroutineBody>
-  </subroutineDec>
-  <subroutineDec>
-    <keyword> function </keyword>
-    <keyword> void </keyword>
-    <identifier> fillMemory </identifier>{'category': 'subroutine', 'defined': True, 'kind': None, 'index': None}
-    <symbol> ( </symbol>
-    <parameterList>
-      <keyword> int </keyword>
-      <identifier> startAddress </identifier>{'category': 'ARG', 'defined': True, 'kind': 'ARG', 'index': 0}
-      <symbol> , </symbol>
-      <keyword> int </keyword>
-      <identifier> length </identifier>{'category': 'ARG', 'defined': True, 'kind': 'ARG', 'index': 1}
-      <symbol> , </symbol>
-      <keyword> int </keyword>
-      <identifier> value </identifier>{'category': 'ARG', 'defined': True, 'kind': 'ARG', 'index': 2}
-    </parameterList>
-    <symbol> ) </symbol>
-    <subroutineBody>
-      <symbol> { </symbol>
-      <statements>
-        <whileStatement>
-          <keyword> while </keyword>
-          <symbol> ( </symbol>
-          <expression>
-            <term>
-              <identifier> length </identifier>{'category': None, 'defined': False, 'kind': 'ARG', 'index': 1}
-            </term>
-            <symbol> &gt </symbol>
-            <term>
-              <integerConstant> 0 </integerConstant>
-push constant 0
-            </term>
-gt
-          </expression>
-          <symbol> ) </symbol>
-          <symbol> { </symbol>
-          <statements>
-            <doStatement>
-              <keyword> do </keyword>
-              <identifier> Memory </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
-              <symbol> . </symbol>
-              <identifier> poke </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
-              <symbol> ( </symbol>
-              <expressionList>
-                <expression>
-                  <term>
-                    <identifier> startAddress </identifier>{'category': None, 'defined': False, 'kind': 'ARG', 'index': 0}
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <identifier> value </identifier>{'category': None, 'defined': False, 'kind': 'ARG', 'index': 2}
-                  </term>
-                </expression>
-              </expressionList>
-              <symbol> ) </symbol>
-              <symbol> ; </symbol>
-call Memory.poke 5
-            </doStatement>
-            <letStatement>
-              <keyword> let </keyword>
-              <identifier> length </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 5}
-              <symbol> = </symbol>
-              <expression>
-                <term>
-                  <identifier> length </identifier>{'category': None, 'defined': False, 'kind': 'VAR', 'index': 5}
-                </term>
-                <symbol> - </symbol>
-                <term>
-                  <integerConstant> 1 </integerConstant>
-push constant 1
-                </term>
-neg
-              </expression>
-              <symbol> ; </symbol>
-            </letStatement>
-            <letStatement>
-              <keyword> let </keyword>
-              <identifier> startAddress </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 6}
-              <symbol> = </symbol>
-              <expression>
-                <term>
-                  <identifier> startAddress </identifier>{'category': None, 'defined': False, 'kind': 'VAR', 'index': 6}
-                </term>
-                <symbol> + </symbol>
-                <term>
-                  <integerConstant> 1 </integerConstant>
-push constant 1
-                </term>
-add
-              </expression>
-              <symbol> ; </symbol>
-            </letStatement>
-          </statements>
-          <symbol> } </symbol>
-        </whileStatement>
-        <returnStatement>
-          <keyword> return </keyword>
-return
-          <symbol> ; </symbol>
-        </returnStatement>
-      </statements>
-      <symbol> } </symbol>
-    </subroutineBody>
-  </subroutineDec>
-  <symbol> } </symbol>
-</class>
