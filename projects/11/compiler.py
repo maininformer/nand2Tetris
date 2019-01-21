@@ -1,7 +1,7 @@
 from pdb import set_trace as plum
 
-from .symbol_table import SymbolTable
-from .VMWriter import VMWriter
+from symbol_table import SymbolTable
+from VMWriter import VMWriter
 
 KEYWORD_CONSTANTS = ['true', 'false', 'null', 'this']
 # TODO: potentially gotta replace & with &amp;
@@ -70,7 +70,6 @@ class Compiler(object):
         if self.words_exist(['identifier']): # gotta regex for the name too
             self.format_and_write_line({'category': 'class', 'defined': True, 'kind':None, 'index': None})
             self.SYMBOL_TABLE.class_name = self.get_xml_value()
-            self.SYMBOL_TABLE.class_scope[self.get_xml_value()] = []
             self.advance()
         else:
             raise
@@ -142,6 +141,7 @@ class Compiler(object):
         else:
             raise
         # void, int etc are keywords, class names are identifiers
+        # Here is where we should set a flag if we need to return 0 on void functions
         if self.words_exist(['keyword']) or self.words_exist(['identifier']):
             self.format_and_write_line()
             self.advance()
@@ -150,11 +150,6 @@ class Compiler(object):
         if self.words_exist(['identifier']):
             self.format_and_write_line({'category': 'subroutine', 'defined': True, 'kind':None, 'index': None})
             self.SYMBOL_TABLE.subroutine_name = self.get_xml_value()
-            if self.SYMBOL_TABLE.subroutine_name == 'main' and self.SYMBOL_TABLE.class_name == 'Main':
-                if self.vm:
-                    self.compiled.write(
-                        VMWriter.write_function('Main.main', '0')
-                    )
             self.advance()
         else:
             raise
@@ -172,6 +167,14 @@ class Compiler(object):
         if self.words_exist(['symbol',')']):
             self.format_and_write_line()
             self.advance()
+
+        if self.vm:
+            self.compiled.write(
+                VMWriter.write_function(
+                    '{0}.{1}'.format(self.SYMBOL_TABLE.class_name, self.SYMBOL_TABLE.subroutine_name), 
+                    self.SYMBOL_TABLE.var_count('ARG'))
+            )
+
         if self.words_exist(['{']):
             self.compileSubroutineBody()
 
@@ -284,19 +287,19 @@ class Compiler(object):
             self.format_and_write_line()
             self.advance()
 
-        if self.vm:
-            plum()
-            self.compiled.write(
-                VMWriter.write_call(self.SYMBOL_TABLE.subroutine_name, self.SYMBOL_TABLE.subroutine_index)
-            )
         self.close_tag('doStatement')
+        if self.vm:
+            self.compiled.write(
+                VMWriter.write_pop('temp', 0)
+            )
+
 
     def compileSubroutineCall(self, identifier_compiled = False):
         # no tags
         # subroutineName, varName|className
         if self.words_exist(['identifier']) and not identifier_compiled:
             self.format_and_write_line({'category': 'subroutine', 'defined': False, 'kind': None, 'index':None})
-            self.SYMBOL_TABLE.subroutine_name = self.get_xml_value()
+            subroutine_name = self.get_xml_value()
             self.advance()
         if self.words_exist(['symbol','(']):
             # subroutine call
@@ -308,23 +311,29 @@ class Compiler(object):
                 self.advance()
         elif self.words_exist(['symbol', '.']):
             self.format_and_write_line()
-            self.SYMBOL_TABLE.subroutine_name += '.'
+            subroutine_name += '.'
             self.advance()
             if self.words_exist(['identifier']):
                 self.format_and_write_line({'category': 'subroutine', 'defined':False, 'kind':None, 'index':None})
-                self.SYMBOL_TABLE.subroutine_name += self.get_xml_value()
+                subroutine_name += self.get_xml_value()
                 self.advance()
             if self.words_exist(['symbol','(']):
                 # subroutine call
                 self.format_and_write_line()
                 self.advance()
-            # always compile expresionLists cause nothing is an expressionList
+            # always compile expresionLists cause "nothing" is also an expressionList
             self.compileExpressionList()
             if self.words_exist(['symbol', ')']):
                 self.format_and_write_line()
                 self.advance()
         else:
             raise
+
+        if self.vm:
+            self.compiled.write(
+                VMWriter.write_call(subroutine_name, self.SYMBOL_TABLE.subroutine_index)
+            )
+
 
     def compileLet(self):
         self.open_tag('letStatement')

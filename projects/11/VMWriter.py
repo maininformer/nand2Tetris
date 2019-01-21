@@ -15,7 +15,7 @@ class VMWriter(object):
 
     @staticmethod
     def write_pop(segment, index):
-        assert segment in (
+        assert segment.upper() in (
                 'CONST',
                 'ARG',
                 'LOCAL',
