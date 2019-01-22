@@ -49,6 +49,3 @@ class SymbolTable(object):
             return self.class_index
         else:
             return None
-
-    def is_in_class_scope(self, name):
-        return len(filter(lambda x: x['name'] == name, self.class_scope)) == 1 

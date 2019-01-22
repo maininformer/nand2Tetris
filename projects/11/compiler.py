@@ -62,18 +62,6 @@ class Compiler(object):
         self.open_tag("class")
         self.advance()
 
-        if self.vm:
-            # set whatever the "this" address is, for classes it has size 0. It is nothing.
-            # whatever is in "this" when the RAM starts
-            # if the name of a class is in the symbol table, then it is an object so it's
-            # "this" must be gotten from the locals and then set before calling the function
-            # else, the address is the classes address, for any class method call; When calling
-            # another class function, the child class functions scope will be the caller's scope
-            # because that is what the pointer 0 was, and the child callee will pop it to it's own
-            # this
-            self.compiled.write(
-                VMWriter.write_push('pointer', '0')
-            )
         if self.words_exist(['keyword','class']):
             self.format_and_write_line()
             self.advance()
@@ -146,7 +134,6 @@ class Compiler(object):
 
     def compileSubroutine(self):
         self.open_tag("subroutineDec")
-        self.SYMBOL_TABLE.define('this', 'this', 'ARG')
         if self.words_exist(['keyword', 'constructor']) or self.words_exist(['keyword', 'function']) or self.words_exist(['keyword', 'method']):
             self.format_and_write_line()
             self.advance()
@@ -314,15 +301,9 @@ class Compiler(object):
             self.format_and_write_line({'category': 'subroutine', 'defined': False, 'kind': None, 'index':None})
             identifier = self.get_xml_value()
             self.SYMBOL_TABLE.subroutine_name = identifier
-            if self.SYMBOL_TABLE.is_in_class_scope(identifier):
-                # this is an object method and must be called by "this"
-                self.SYMBOL_TABLE.subroutine_index += 1
             self.advance()
         else:
             self.SYMBOL_TABLE.subroutine_name = identifier
-            if self.SYMBOL_TABLE.is_in_class_scope(identifier):
-                # this is an object method and must be called by "this"
-                self.SYMBOL_TABLE.subroutine_index += 1
         if self.words_exist(['symbol','(']):
             # subroutine call
             self.format_and_write_line()
