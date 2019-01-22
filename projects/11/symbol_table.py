@@ -43,9 +43,9 @@ class SymbolTable(object):
             return filter( lambda x: x['name'] == name, self.class_scope)[0]['type_']
 
     def index_of(self, name):
-        if name == self.subroutine_scope:
+        if name in map(lambda x: x['name'], self.subroutine_scope):
             return self.subroutine_index
-        elif name == self.class_scope:
+        elif name in map(lambda x: x['name'], self.class_scope):
             return self.class_index
         else:
             return None

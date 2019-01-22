@@ -134,6 +134,8 @@ class Compiler(object):
 
     def compileSubroutine(self):
         self.open_tag("subroutineDec")
+        n_params = 0
+        self.SYMBOL_TABLE.start_subroutine()
         if self.words_exist(['keyword', 'constructor']) or self.words_exist(['keyword', 'function']) or self.words_exist(['keyword', 'method']):
             self.format_and_write_line()
             self.advance()
@@ -159,7 +161,8 @@ class Compiler(object):
             raise
         # no raise needed here cause its optional
         if self.words_exist(['keyword']): # we have parameters
-            self.compileParameterList()
+            n_params = self.compileParameterList()
+
         else:
             self.open_tag('parameterList')
             self.close_tag('parameterList')
@@ -171,7 +174,7 @@ class Compiler(object):
             self.compiled.write(
                 VMWriter.write_function(
                     '{0}.{1}'.format(self.SYMBOL_TABLE.class_name, self.SYMBOL_TABLE.subroutine_name), 
-                    self.SYMBOL_TABLE.var_count('ARG'))
+                    n_params)
             )
 
         if self.words_exist(['{']):
@@ -296,14 +299,12 @@ class Compiler(object):
     def compileSubroutineCall(self, identifier_compiled = False, identifier=None):
         # no tags
         # subroutineName, varName|className
-        self.SYMBOL_TABLE.start_subroutine()
         if self.words_exist(['identifier']) and not identifier_compiled:
             self.format_and_write_line({'category': 'subroutine', 'defined': False, 'kind': None, 'index':None})
-            identifier = self.get_xml_value()
-            self.SYMBOL_TABLE.subroutine_name = identifier
+            subroutine_name = self.get_xml_value()
             self.advance()
         else:
-            self.SYMBOL_TABLE.subroutine_name = identifier
+            subroutine_name = identifier
         if self.words_exist(['symbol','(']):
             # subroutine call
             self.format_and_write_line()
@@ -314,18 +315,18 @@ class Compiler(object):
                 self.advance()
         elif self.words_exist(['symbol', '.']):
             self.format_and_write_line()
-            self.SYMBOL_TABLE.subroutine_name += '.'
+            subroutine_name += '.'
             self.advance()
             if self.words_exist(['identifier']):
                 self.format_and_write_line({'category': 'subroutine', 'defined':False, 'kind':None, 'index':None})
-                self.SYMBOL_TABLE.subroutine_name += self.get_xml_value()
+                subroutine_name += self.get_xml_value()
                 self.advance()
             if self.words_exist(['symbol','(']):
                 # subroutine call
                 self.format_and_write_line()
                 self.advance()
             # always compile expresionLists cause "nothing" is also an expressionList
-            self.compileExpressionList()
+            n_args = self.compileExpressionList()
             if self.words_exist(['symbol', ')']):
                 self.format_and_write_line()
                 self.advance()
@@ -334,7 +335,7 @@ class Compiler(object):
 
         if self.vm:
             self.compiled.write(
-                VMWriter.write_call(self.SYMBOL_TABLE.subroutine_name, self.SYMBOL_TABLE.subroutine_index)
+                VMWriter.write_call(subroutine_name, n_args)
             )
 
 
@@ -372,6 +373,10 @@ class Compiler(object):
             self.advance()
         else:
             raise
+        if self.vm:
+            self.compiled.write(
+                VMWriter.write_pop('local', self.SYMBOL_TABLE.index_of(name))
+            )
         self.close_tag('letStatement')
 
     def compileWhile(self):
@@ -521,6 +526,10 @@ class Compiler(object):
             index = self.SYMBOL_TABLE.index_of(name)
             self.format_and_write_line({'category': None, 'defined':False, 'kind':kind, 'index':index})
             self.advance()
+            # THIS ONLY WORKS FOR SIMPLE IDENTIFIERS, should refactor for indexing arrays
+            self.compiled.write(
+                VMWriter.write_push('local', index)
+            )
             # if there is a [ next
             if self.words_exist(['symbol', '[']):
                 self.format_and_write_line()
@@ -531,7 +540,7 @@ class Compiler(object):
                     self.advance()
                 else:
                     raise
-            # if there is a ( next subroutine call
+            # if there is a ( next subroutine call, it will leave its value on the stack
             elif self.words_exist(['(']) or self.words_exist(['.']):
                 self.compileSubroutineCall(identifier_compiled=True, identifier=name)
 
@@ -558,10 +567,11 @@ class Compiler(object):
 
     def compileExpressionList(self):
         self.open_tag('expressionList')
+        n_expressions = 0
         has_next = (self.current_line.find(')') == -1)
         while has_next:
             self.compileExpression()
-            self.SYMBOL_TABLE.subroutine_index += 1
+            n_expressions += 1
             has_next = False
             if self.words_exist([',']):
                 self.format_and_write_line()
@@ -569,4 +579,5 @@ class Compiler(object):
                 has_next = True
 
         self.close_tag('expressionList')
+        return n_expressions
 

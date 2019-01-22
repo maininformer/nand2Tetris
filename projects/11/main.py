@@ -3,7 +3,7 @@ from os import listdir
 from tokenizer import Tokenizer
 from compiler import Compiler
 
-DIRECTORY_NAME = 'Seven'
+DIRECTORY_NAME = 'ConvertToBin'
 SRC_SUFFIX = 'jack'
 TOKENIZED_SUFFIX = 'xml'
 VM_SUFFIX = 'vm'
