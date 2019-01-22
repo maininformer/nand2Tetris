@@ -62,6 +62,18 @@ class Compiler(object):
         self.open_tag("class")
         self.advance()
 
+        if self.vm:
+            # set whatever the "this" address is, for classes it has size 0. It is nothing.
+            # whatever is in "this" when the RAM starts
+            # if the name of a class is in the symbol table, then it is an object so it's
+            # "this" must be gotten from the locals and then set before calling the function
+            # else, the address is the classes address, for any class method call; When calling
+            # another class function, the child class functions scope will be the caller's scope
+            # because that is what the pointer 0 was, and the child callee will pop it to it's own
+            # this
+            self.compiled.write(
+                VMWriter.write_push('pointer', '0')
+            )
         if self.words_exist(['keyword','class']):
             self.format_and_write_line()
             self.advance()
@@ -134,7 +146,7 @@ class Compiler(object):
 
     def compileSubroutine(self):
         self.open_tag("subroutineDec")
-        self.SYMBOL_TABLE.start_subroutine()
+        self.SYMBOL_TABLE.define('this', 'this', 'ARG')
         if self.words_exist(['keyword', 'constructor']) or self.words_exist(['keyword', 'function']) or self.words_exist(['keyword', 'method']):
             self.format_and_write_line()
             self.advance()
@@ -294,13 +306,23 @@ class Compiler(object):
             )
 
 
-    def compileSubroutineCall(self, identifier_compiled = False):
+    def compileSubroutineCall(self, identifier_compiled = False, identifier=None):
         # no tags
         # subroutineName, varName|className
+        self.SYMBOL_TABLE.start_subroutine()
         if self.words_exist(['identifier']) and not identifier_compiled:
             self.format_and_write_line({'category': 'subroutine', 'defined': False, 'kind': None, 'index':None})
-            subroutine_name = self.get_xml_value()
+            identifier = self.get_xml_value()
+            self.SYMBOL_TABLE.subroutine_name = identifier
+            if self.SYMBOL_TABLE.is_in_class_scope(identifier):
+                # this is an object method and must be called by "this"
+                self.SYMBOL_TABLE.subroutine_index += 1
             self.advance()
+        else:
+            self.SYMBOL_TABLE.subroutine_name = identifier
+            if self.SYMBOL_TABLE.is_in_class_scope(identifier):
+                # this is an object method and must be called by "this"
+                self.SYMBOL_TABLE.subroutine_index += 1
         if self.words_exist(['symbol','(']):
             # subroutine call
             self.format_and_write_line()
@@ -311,11 +333,11 @@ class Compiler(object):
                 self.advance()
         elif self.words_exist(['symbol', '.']):
             self.format_and_write_line()
-            subroutine_name += '.'
+            self.SYMBOL_TABLE.subroutine_name += '.'
             self.advance()
             if self.words_exist(['identifier']):
                 self.format_and_write_line({'category': 'subroutine', 'defined':False, 'kind':None, 'index':None})
-                subroutine_name += self.get_xml_value()
+                self.SYMBOL_TABLE.subroutine_name += self.get_xml_value()
                 self.advance()
             if self.words_exist(['symbol','(']):
                 # subroutine call
@@ -331,7 +353,7 @@ class Compiler(object):
 
         if self.vm:
             self.compiled.write(
-                VMWriter.write_call(subroutine_name, self.SYMBOL_TABLE.subroutine_index)
+                VMWriter.write_call(self.SYMBOL_TABLE.subroutine_name, self.SYMBOL_TABLE.subroutine_index)
             )
 
 
@@ -490,7 +512,7 @@ class Compiler(object):
                 )
         self.close_tag('expression')
 
-    def compileTerm(self):
+    def compileTerm(self, operation=None):
         def get_condition():
             res_list = []
             for k in KEYWORD_CONSTANTS:
@@ -499,7 +521,7 @@ class Compiler(object):
             for r in res_list:
                 res = res or r
             return res
-
+        
         self.open_tag('term')
         if self.words_exist(['integerConstant']) or self.words_exist(['stringConstant']) or get_condition():
             self.format_and_write_line()
@@ -507,6 +529,10 @@ class Compiler(object):
                 self.compiled.write(
                     VMWriter.write_push('constant', self.get_xml_value())
                 )
+                if operation:
+                    self.compiled.write(
+                        VMWriter.write_arithmetic(operation)
+                    )
             self.advance()
         elif self.words_exist(['identifier']):
             name = self.get_xml_value()
@@ -526,7 +552,7 @@ class Compiler(object):
                     raise
             # if there is a ( next subroutine call
             elif self.words_exist(['(']) or self.words_exist(['.']):
-                self.compileSubroutineCall(identifier_compiled=True)
+                self.compileSubroutineCall(identifier_compiled=True, identifier=name)
 
         elif self.words_exist(['(', 'symbol']):
             self.format_and_write_line()
@@ -538,9 +564,13 @@ class Compiler(object):
             else:
                 raise
         elif self.words_exist(['-']) or self.words_exist(['~']):
+            if self.words_exist(['-']):
+                operation = 'neg'
+            else:
+                operation = '~'
             self.format_and_write_line()
             self.advance()
-            self.compileTerm()
+            self.compileTerm(operation=operation)
         else:
             raise
         self.close_tag('term')
@@ -558,3 +588,4 @@ class Compiler(object):
                 has_next = True
 
         self.close_tag('expressionList')
+

@@ -39,7 +39,7 @@ class VMWriter(object):
             '&lt': 'lt',
             '&amp': 'and',
             '|': 'or',
-            '-': 'neg',
+            'neg': 'neg',
             '~': 'not'
         }
         assert command in mapping

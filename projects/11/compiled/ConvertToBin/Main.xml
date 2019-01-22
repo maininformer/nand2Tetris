@@ -15,7 +15,7 @@
       <varDec>
         <keyword> var </keyword>
         <keyword> int </keyword>
-        <identifier> value </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 0}
+        <identifier> value </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
         <symbol> ; </symbol>
       </varDec>
       <statements>
@@ -52,7 +52,7 @@
         </doStatement>
         <letStatement>
           <keyword> let </keyword>
-          <identifier> value </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 4}
+          <identifier> value </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
           <symbol> = </symbol>
           <expression>
             <term>
@@ -81,7 +81,7 @@
           <expressionList>
             <expression>
               <term>
-                <identifier> value </identifier>{'category': None, 'defined': False, 'kind': 'VAR', 'index': 4}
+                <identifier> value </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
               </term>
             </expression>
           </expressionList>
@@ -103,7 +103,7 @@
     <symbol> ( </symbol>
     <parameterList>
       <keyword> int </keyword>
-      <identifier> value </identifier>{'category': 'ARG', 'defined': True, 'kind': 'ARG', 'index': 0}
+      <identifier> value </identifier>{'category': 'ARG', 'defined': True, 'kind': None, 'index': None}
     </parameterList>
     <symbol> ) </symbol>
     <subroutineBody>
@@ -111,21 +111,21 @@
       <varDec>
         <keyword> var </keyword>
         <keyword> int </keyword>
-        <identifier> mask </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 1}
+        <identifier> mask </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
         <symbol> , </symbol>
-        <identifier> position </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 2}
+        <identifier> position </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
         <symbol> ; </symbol>
       </varDec>
       <varDec>
         <keyword> var </keyword>
         <keyword> boolean </keyword>
-        <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 3}
+        <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
         <symbol> ; </symbol>
       </varDec>
       <statements>
         <letStatement>
           <keyword> let </keyword>
-          <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 4}
+          <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
           <symbol> = </symbol>
           <expression>
             <term>
@@ -139,7 +139,7 @@
           <symbol> ( </symbol>
           <expression>
             <term>
-              <identifier> loop </identifier>{'category': None, 'defined': False, 'kind': 'VAR', 'index': 4}
+              <identifier> loop </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -147,11 +147,11 @@
           <statements>
             <letStatement>
               <keyword> let </keyword>
-              <identifier> position </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 5}
+              <identifier> position </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
               <symbol> = </symbol>
               <expression>
                 <term>
-                  <identifier> position </identifier>{'category': None, 'defined': False, 'kind': 'VAR', 'index': 5}
+                  <identifier> position </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
                 </term>
                 <symbol> + </symbol>
                 <term>
@@ -162,7 +162,332 @@
             </letStatement>
             <letStatement>
               <keyword> let </keyword>
-              <identifier> mask </identifier>{'category': 'VAR', 'defined': True, 'kind': 'VAR', 'index': 6}
+              <identifier> mask </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
               <symbol> = </symbol>
               <expression>
                 <term>
+                  <identifier> Main </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                  <symbol> . </symbol>
+                  <identifier> nextMask </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
+                  <symbol> ( </symbol>
+                  <expressionList>
+                    <expression>
+                      <term>
+                        <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                      </term>
+                    </expression>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <ifStatement>
+              <keyword> if </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <symbol> ~ </symbol>
+                  <term>
+                    <symbol> ( </symbol>
+                    <expression>
+                      <term>
+                        <identifier> position </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                      </term>
+                      <symbol> &gt </symbol>
+                      <term>
+                        <integerConstant> 16 </integerConstant>
+                      </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                  </term>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <ifStatement>
+                  <keyword> if </keyword>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <symbol> ~ </symbol>
+                      <term>
+                        <symbol> ( </symbol>
+                        <expression>
+                          <term>
+                            <symbol> ( </symbol>
+                            <expression>
+                              <term>
+                                <identifier> value </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                              </term>
+                              <symbol> &amp </symbol>
+                              <term>
+                                <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                              </term>
+                            </expression>
+                            <symbol> ) </symbol>
+                          </term>
+                          <symbol> = </symbol>
+                          <term>
+                            <integerConstant> 0 </integerConstant>
+                          </term>
+                        </expression>
+                        <symbol> ) </symbol>
+                      </term>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                  <symbol> { </symbol>
+                  <statements>
+                    <doStatement>
+                      <keyword> do </keyword>
+                      <identifier> Memory </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
+                      <symbol> . </symbol>
+                      <identifier> poke </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
+                      <symbol> ( </symbol>
+                      <expressionList>
+                        <expression>
+                          <term>
+                            <integerConstant> 8000 </integerConstant>
+                          </term>
+                          <symbol> + </symbol>
+                          <term>
+                            <identifier> position </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                          </term>
+                        </expression>
+                        <symbol> , </symbol>
+                        <expression>
+                          <term>
+                            <integerConstant> 1 </integerConstant>
+                          </term>
+                        </expression>
+                      </expressionList>
+                      <symbol> ) </symbol>
+                      <symbol> ; </symbol>
+                    </doStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                  <keyword> else </keyword>
+                  <symbol> { </symbol>
+                  <statements>
+                    <doStatement>
+                      <keyword> do </keyword>
+                      <identifier> Memory </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
+                      <symbol> . </symbol>
+                      <identifier> poke </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
+                      <symbol> ( </symbol>
+                      <expressionList>
+                        <expression>
+                          <term>
+                            <integerConstant> 8000 </integerConstant>
+                          </term>
+                          <symbol> + </symbol>
+                          <term>
+                            <identifier> position </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                          </term>
+                        </expression>
+                        <symbol> , </symbol>
+                        <expression>
+                          <term>
+                            <integerConstant> 0 </integerConstant>
+                          </term>
+                        </expression>
+                      </expressionList>
+                      <symbol> ) </symbol>
+                      <symbol> ; </symbol>
+                    </doStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                </ifStatement>
+              </statements>
+              <symbol> } </symbol>
+              <keyword> else </keyword>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <keyword> false </keyword>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+              </statements>
+              <symbol> } </symbol>
+            </ifStatement>
+          </statements>
+          <symbol> } </symbol>
+        </whileStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> function </keyword>
+    <keyword> int </keyword>
+    <identifier> nextMask </identifier>{'category': 'subroutine', 'defined': True, 'kind': None, 'index': None}
+    <symbol> ( </symbol>
+    <parameterList>
+      <keyword> int </keyword>
+      <identifier> mask </identifier>{'category': 'ARG', 'defined': True, 'kind': None, 'index': None}
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+            </term>
+            <symbol> = </symbol>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <returnStatement>
+              <keyword> return </keyword>
+              <expression>
+                <term>
+                  <integerConstant> 1 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </returnStatement>
+          </statements>
+          <symbol> } </symbol>
+          <keyword> else </keyword>
+          <symbol> { </symbol>
+          <statements>
+            <returnStatement>
+              <keyword> return </keyword>
+              <expression>
+                <term>
+                  <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                </term>
+                <symbol> * </symbol>
+                <term>
+                  <integerConstant> 2 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </returnStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> function </keyword>
+    <keyword> void </keyword>
+    <identifier> fillMemory </identifier>{'category': 'subroutine', 'defined': True, 'kind': None, 'index': None}
+    <symbol> ( </symbol>
+    <parameterList>
+      <keyword> int </keyword>
+      <identifier> startAddress </identifier>{'category': 'ARG', 'defined': True, 'kind': None, 'index': None}
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <identifier> length </identifier>{'category': 'ARG', 'defined': True, 'kind': None, 'index': None}
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <identifier> value </identifier>{'category': 'ARG', 'defined': True, 'kind': None, 'index': None}
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <whileStatement>
+          <keyword> while </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <identifier> length </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+            </term>
+            <symbol> &gt </symbol>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <doStatement>
+              <keyword> do </keyword>
+              <identifier> Memory </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
+              <symbol> . </symbol>
+              <identifier> poke </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <identifier> startAddress </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <identifier> value </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <identifier> length </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <identifier> length </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                </term>
+                <symbol> - </symbol>
+                <term>
+                  <integerConstant> 1 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <identifier> startAddress </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': None}
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <identifier> startAddress </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
+                </term>
+                <symbol> + </symbol>
+                <term>
+                  <integerConstant> 1 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+        </whileStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <symbol> } </symbol>
+</class>
