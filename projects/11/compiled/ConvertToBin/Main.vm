@@ -16,6 +16,8 @@ function Main.convert 1
 push constant 1
 neg
 pop local 0
+<<<<< DONE HERE THIS IS WHILE
+>>> HANDLE IF ELSE HERE
 if-goto 275
 goto 221
 label 275
@@ -30,7 +32,7 @@ pop local 2
 push local 1
 push constant 16
 gt
-push argument None
+push argument None <<< ERROR
 push local 2
 and
 push constant 0
@@ -51,6 +53,7 @@ push constant 0
 pop local 3
 goto 275
 label 221
+>>>>> END WHILE
 return
 function Main.nextMask 1
 push argument None
