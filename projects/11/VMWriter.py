@@ -1,29 +1,29 @@
 class VMWriter(object):
     @staticmethod
     def write_push(segment, index):
-        assert segment.upper() in (
-                'CONSTANT',
-                'ARG',
-                'LOCAL',
-                'STATIC',
-                'THIS',
-                'THAT',
-                'POINTER',
-                'TEMP'
+        assert segment in (
+                'constant',
+                'argument',
+                'local',
+                'static',
+                'this',
+                'that',
+                'pointer',
+                'temp'
         )
         return 'push {0} {1}\n'.format(segment.lower(), index)
 
     @staticmethod
     def write_pop(segment, index):
-        assert segment.upper() in (
-                'CONST',
-                'ARG',
-                'LOCAL',
-                'STATIC',
-                'THIS',
-                'THAT',
-                'POINTER',
-                'TEMP'
+        assert segment in (
+                'constant',
+                'arg',
+                'local',
+                'static',
+                'this',
+                'that',
+                'pointer',
+                'temp'
         )
         return 'pop {0} {1}\n'.format(segment, index)
 

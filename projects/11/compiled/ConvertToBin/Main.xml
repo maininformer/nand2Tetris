@@ -15,7 +15,7 @@
       <varDec>
         <keyword> var </keyword>
         <keyword> int </keyword>
-        <identifier> value </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 1}
+        <identifier> value </identifier>{'category': 'VAR', 'defined': True, 'kind': 'var', 'index': None}
         <symbol> ; </symbol>
       </varDec>
       <statements>
@@ -52,12 +52,11 @@
         </doStatement>
         <letStatement>
           <keyword> let </keyword>
-          <identifier> value </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 2}
+          <identifier> value </identifier>{'category': 'VAR', 'defined': True, 'kind': 'var', 'index': 0}
           <symbol> = </symbol>
           <expression>
             <term>
               <identifier> Memory </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
-push local None
               <symbol> . </symbol>
               <identifier> peek </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
               <symbol> ( </symbol>
@@ -82,8 +81,8 @@ push local None
           <expressionList>
             <expression>
               <term>
-                <identifier> value </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 2}
-push local 2
+                <identifier> value </identifier>{'category': None, 'defined': False, 'kind': 'var', 'index': 0}
+push local 0
               </term>
             </expression>
           </expressionList>
@@ -105,7 +104,7 @@ push local 2
     <symbol> ( </symbol>
     <parameterList>
       <keyword> int </keyword>
-      <identifier> value </identifier>{'category': 'ARG', 'defined': True, 'kind': None, 'index': 1}
+      <identifier> value </identifier>{'category': 'ARG', 'defined': True, 'kind': 'arg', 'index': None}
     </parameterList>
     <symbol> ) </symbol>
     <subroutineBody>
@@ -113,21 +112,21 @@ push local 2
       <varDec>
         <keyword> var </keyword>
         <keyword> int </keyword>
-        <identifier> mask </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 2}
+        <identifier> mask </identifier>{'category': 'VAR', 'defined': True, 'kind': 'var', 'index': None}
         <symbol> , </symbol>
-        <identifier> position </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 3}
+        <identifier> position </identifier>{'category': 'VAR', 'defined': True, 'kind': 'var', 'index': None}
         <symbol> ; </symbol>
       </varDec>
       <varDec>
         <keyword> var </keyword>
         <keyword> boolean </keyword>
-        <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 4}
+        <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': 'var', 'index': None}
         <symbol> ; </symbol>
       </varDec>
       <statements>
         <letStatement>
           <keyword> let </keyword>
-          <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 5}
+          <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': 'var', 'index': 0}
           <symbol> = </symbol>
           <expression>
             <term>
@@ -137,12 +136,15 @@ push local 2
           <symbol> ; </symbol>
         </letStatement>
         <whileStatement>
+if-goto 229
+goto 499
+label 229
           <keyword> while </keyword>
           <symbol> ( </symbol>
           <expression>
             <term>
-              <identifier> loop </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 5}
-push local 5
+              <identifier> loop </identifier>{'category': None, 'defined': False, 'kind': 'var', 'index': 0}
+push local 0
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -150,12 +152,12 @@ push local 5
           <statements>
             <letStatement>
               <keyword> let </keyword>
-              <identifier> position </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 6}
+              <identifier> position </identifier>{'category': 'VAR', 'defined': True, 'kind': 'var', 'index': 1}
               <symbol> = </symbol>
               <expression>
                 <term>
-                  <identifier> position </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 6}
-push local 6
+                  <identifier> position </identifier>{'category': None, 'defined': False, 'kind': 'var', 'index': 1}
+push local 1
                 </term>
                 <symbol> + </symbol>
                 <term>
@@ -166,20 +168,19 @@ push local 6
             </letStatement>
             <letStatement>
               <keyword> let </keyword>
-              <identifier> mask </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 7}
+              <identifier> mask </identifier>{'category': 'VAR', 'defined': True, 'kind': 'var', 'index': 2}
               <symbol> = </symbol>
               <expression>
                 <term>
                   <identifier> Main </identifier>{'category': None, 'defined': False, 'kind': None, 'index': None}
-push local None
                   <symbol> . </symbol>
                   <identifier> nextMask </identifier>{'category': 'subroutine', 'defined': False, 'kind': None, 'index': None}
                   <symbol> ( </symbol>
                   <expressionList>
                     <expression>
                       <term>
-                        <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 7}
-push local 7
+                        <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': 'var', 'index': 2}
+push local 2
                       </term>
                     </expression>
                   </expressionList>
@@ -198,8 +199,8 @@ push local 7
                     <symbol> ( </symbol>
                     <expression>
                       <term>
-                        <identifier> position </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 7}
-push local 7
+                        <identifier> position </identifier>{'category': None, 'defined': False, 'kind': 'var', 'index': 1}
+push local 1
                       </term>
                       <symbol> &gt </symbol>
                       <term>
@@ -226,13 +227,13 @@ push local 7
                             <symbol> ( </symbol>
                             <expression>
                               <term>
-                                <identifier> value </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 7}
-push local 7
+                                <identifier> value </identifier>{'category': None, 'defined': False, 'kind': 'arg', 'index': None}
+push argument None
                               </term>
                               <symbol> &amp </symbol>
                               <term>
-                                <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 7}
-push local 7
+                                <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': 'var', 'index': 2}
+push local 2
                               </term>
                             </expression>
                             <symbol> ) </symbol>
@@ -262,8 +263,8 @@ push local 7
                           </term>
                           <symbol> + </symbol>
                           <term>
-                            <identifier> position </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 7}
-push local 7
+                            <identifier> position </identifier>{'category': None, 'defined': False, 'kind': 'var', 'index': 1}
+push local 1
                           </term>
                         </expression>
                         <symbol> , </symbol>
@@ -294,8 +295,8 @@ push local 7
                           </term>
                           <symbol> + </symbol>
                           <term>
-                            <identifier> position </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 7}
-push local 7
+                            <identifier> position </identifier>{'category': None, 'defined': False, 'kind': 'var', 'index': 1}
+push local 1
                           </term>
                         </expression>
                         <symbol> , </symbol>
@@ -318,7 +319,7 @@ push local 7
               <statements>
                 <letStatement>
                   <keyword> let </keyword>
-                  <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 8}
+                  <identifier> loop </identifier>{'category': 'VAR', 'defined': True, 'kind': 'var', 'index': 3}
                   <symbol> = </symbol>
                   <expression>
                     <term>
@@ -332,6 +333,8 @@ push local 7
             </ifStatement>
           </statements>
           <symbol> } </symbol>
+goto 229
+label 499
         </whileStatement>
         <returnStatement>
           <keyword> return </keyword>
@@ -348,7 +351,7 @@ push local 7
     <symbol> ( </symbol>
     <parameterList>
       <keyword> int </keyword>
-      <identifier> mask </identifier>{'category': 'ARG', 'defined': True, 'kind': None, 'index': 1}
+      <identifier> mask </identifier>{'category': 'ARG', 'defined': True, 'kind': 'arg', 'index': None}
     </parameterList>
     <symbol> ) </symbol>
     <subroutineBody>
@@ -359,8 +362,8 @@ push local 7
           <symbol> ( </symbol>
           <expression>
             <term>
-              <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 1}
-push local 1
+              <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': 'arg', 'index': None}
+push argument None
             </term>
             <symbol> = </symbol>
             <term>
@@ -388,8 +391,8 @@ push local 1
               <keyword> return </keyword>
               <expression>
                 <term>
-                  <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 1}
-push local 1
+                  <identifier> mask </identifier>{'category': None, 'defined': False, 'kind': 'arg', 'index': None}
+push argument None
                 </term>
                 <symbol> * </symbol>
                 <term>
@@ -412,25 +415,28 @@ push local 1
     <symbol> ( </symbol>
     <parameterList>
       <keyword> int </keyword>
-      <identifier> startAddress </identifier>{'category': 'ARG', 'defined': True, 'kind': None, 'index': 1}
+      <identifier> startAddress </identifier>{'category': 'ARG', 'defined': True, 'kind': 'arg', 'index': None}
       <symbol> , </symbol>
       <keyword> int </keyword>
-      <identifier> length </identifier>{'category': 'ARG', 'defined': True, 'kind': None, 'index': 2}
+      <identifier> length </identifier>{'category': 'ARG', 'defined': True, 'kind': 'arg', 'index': None}
       <symbol> , </symbol>
       <keyword> int </keyword>
-      <identifier> value </identifier>{'category': 'ARG', 'defined': True, 'kind': None, 'index': 3}
+      <identifier> value </identifier>{'category': 'ARG', 'defined': True, 'kind': 'arg', 'index': None}
     </parameterList>
     <symbol> ) </symbol>
     <subroutineBody>
       <symbol> { </symbol>
       <statements>
         <whileStatement>
+if-goto 459
+goto 456
+label 459
           <keyword> while </keyword>
           <symbol> ( </symbol>
           <expression>
             <term>
-              <identifier> length </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 3}
-push local 3
+              <identifier> length </identifier>{'category': None, 'defined': False, 'kind': 'arg', 'index': None}
+push argument None
             </term>
             <symbol> &gt </symbol>
             <term>
@@ -449,15 +455,15 @@ push local 3
               <expressionList>
                 <expression>
                   <term>
-                    <identifier> startAddress </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 3}
-push local 3
+                    <identifier> startAddress </identifier>{'category': None, 'defined': False, 'kind': 'arg', 'index': None}
+push argument None
                   </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
                   <term>
-                    <identifier> value </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 3}
-push local 3
+                    <identifier> value </identifier>{'category': None, 'defined': False, 'kind': 'arg', 'index': None}
+push argument None
                   </term>
                 </expression>
               </expressionList>
@@ -466,12 +472,12 @@ push local 3
             </doStatement>
             <letStatement>
               <keyword> let </keyword>
-              <identifier> length </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 4}
+              <identifier> length </identifier>{'category': 'VAR', 'defined': True, 'kind': 'arg', 'index': 0}
               <symbol> = </symbol>
               <expression>
                 <term>
-                  <identifier> length </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 4}
-push local 4
+                  <identifier> length </identifier>{'category': None, 'defined': False, 'kind': 'arg', 'index': 0}
+push argument 0
                 </term>
                 <symbol> - </symbol>
                 <term>
@@ -482,12 +488,12 @@ push local 4
             </letStatement>
             <letStatement>
               <keyword> let </keyword>
-              <identifier> startAddress </identifier>{'category': 'VAR', 'defined': True, 'kind': None, 'index': 5}
+              <identifier> startAddress </identifier>{'category': 'VAR', 'defined': True, 'kind': 'arg', 'index': 1}
               <symbol> = </symbol>
               <expression>
                 <term>
-                  <identifier> startAddress </identifier>{'category': None, 'defined': False, 'kind': None, 'index': 5}
-push local 5
+                  <identifier> startAddress </identifier>{'category': None, 'defined': False, 'kind': 'arg', 'index': 1}
+push argument 1
                 </term>
                 <symbol> + </symbol>
                 <term>
@@ -498,6 +504,8 @@ push local 5
             </letStatement>
           </statements>
           <symbol> } </symbol>
+goto 459
+label 456
         </whileStatement>
         <returnStatement>
           <keyword> return </keyword>

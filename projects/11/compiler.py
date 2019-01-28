@@ -1,3 +1,4 @@
+from random import randint
 from pdb import set_trace as plum
 
 from symbol_table import SymbolTable
@@ -184,7 +185,7 @@ class Compiler(object):
 
     def compileParameterList(self):
         self.open_tag('parameterList')
-
+        n_params = 0
         has_next = True
         while has_next:
             if self.words_exist(['identifier']) or self.words_exist(['keyword']):
@@ -195,18 +196,20 @@ class Compiler(object):
                 raise
             if self.words_exist(['identifier']):
                 name = self.get_xml_value()
-                self.SYMBOL_TABLE.define(name, type_, 'ARG')
+                self.SYMBOL_TABLE.define(name, type_, 'arg')
                 self.format_and_write_line({'category': 'ARG', 'defined':True, 'kind': self.SYMBOL_TABLE.kind_of(name), 'index':self.SYMBOL_TABLE.index_of(name)})
                 self.advance()
             else:
                 raise
             has_next = False
+            n_params += 1
             if self.words_exist([',']):
                 self.format_and_write_line()
                 self.advance()
                 has_next = True
 
         self.close_tag('parameterList')
+        return n_params
 
     def compileSubroutineBody(self):
         self.open_tag('subroutineBody')
@@ -244,7 +247,7 @@ class Compiler(object):
         while has_next:
             if self.words_exist(['identifier']):
                 name = self.get_xml_value()
-                self.SYMBOL_TABLE.define(name, type_, 'VAR')
+                self.SYMBOL_TABLE.define(name, type_, 'var')
                 self.format_and_write_line({'category': 'VAR', 'defined': True, 'kind': self.SYMBOL_TABLE.kind_of(name), 'index': self.SYMBOL_TABLE.index_of(name)})
                 self.advance()
                 has_next = False
@@ -347,7 +350,8 @@ class Compiler(object):
         if self.words_exist(['identifier']):
             name = self.get_xml_value()
             type_ = 'int' # for lack of a better way to get this; the type will be whatever the expression returns
-            kind = 'VAR'
+            kind = 'var'
+            # always defined after a let
             self.SYMBOL_TABLE.define(name, type_, kind)
             self.format_and_write_line({'category': 'VAR', 'defined':True, 'kind': self.SYMBOL_TABLE.kind_of(name), 'index': self.SYMBOL_TABLE.index_of(name)})
             self.advance()
@@ -381,6 +385,22 @@ class Compiler(object):
 
     def compileWhile(self):
         self.open_tag('whileStatement')
+        while_start_address = str(randint(200, 500))
+        while_end_address = str(randint(200, 500))
+
+        # Stack: true or false
+        # if true go to start
+        self.compiled.write(
+            VMWriter.write_if(while_start_address)
+        )
+        # if not true then do this one, go to the end
+        self.compiled.write(
+            VMWriter.write_go_to(while_end_address)
+        )
+        # this is the start address 
+        self.compiled.write(
+            VMWriter.write_label(while_start_address)
+        )
         if self.words_exist(['while', 'keyword']):
             self.format_and_write_line()
             self.advance()
@@ -408,6 +428,15 @@ class Compiler(object):
             self.advance()
         else:
             raise
+
+        # return to beginning
+        self.compiled.write(
+            VMWriter.write_go_to(while_start_address)
+        )
+        # this is the end address
+        self.compiled.write(
+            VMWriter.write_label(while_end_address)
+        )
         self.close_tag('whileStatement')
 
     def compileReturn(self):
@@ -512,8 +541,15 @@ class Compiler(object):
         if self.words_exist(['integerConstant']) or self.words_exist(['stringConstant']) or get_condition():
             self.format_and_write_line()
             if self.vm:
+                value = self.get_xml_value()
+                if value == 'true':
+                    value = '1'
+                    # this might have consequence. PLUM
+                    operation = 'neg'
+                elif value == 'false' or value == 'null':
+                    value = 0
                 self.compiled.write(
-                    VMWriter.write_push('constant', self.get_xml_value())
+                    VMWriter.write_push('constant', value)
                 )
                 if operation:
                     self.compiled.write(
@@ -527,9 +563,11 @@ class Compiler(object):
             self.format_and_write_line({'category': None, 'defined':False, 'kind':kind, 'index':index})
             self.advance()
             # THIS ONLY WORKS FOR SIMPLE IDENTIFIERS, should refactor for indexing arrays
-            self.compiled.write(
-                VMWriter.write_push('local', index)
-            )
+            KIND_LOOKUP = {'static': 'static', 'field': 'this', 'arg': 'argument', 'var': 'local'}
+            if kind is not None:
+                self.compiled.write(
+                    VMWriter.write_push(KIND_LOOKUP[kind], index)
+                )
             # if there is a [ next
             if self.words_exist(['symbol', '[']):
                 self.format_and_write_line()
