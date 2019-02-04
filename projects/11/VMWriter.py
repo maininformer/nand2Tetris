@@ -17,7 +17,7 @@ class VMWriter(object):
     def write_pop(segment, index):
         assert segment in (
                 'constant',
-                'arg',
+                'argument',
                 'local',
                 'static',
                 'this',

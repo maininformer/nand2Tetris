@@ -1,4 +1,4 @@
-function Main.main 0
+function Main.main 1
 push constant 8001
 push constant 16
 push constant 1
@@ -12,90 +12,92 @@ push local 0
 call Main.convert 1
 pop temp 0
 return
-function Main.convert 1
+function Main.convert 3
 push constant 1
 neg
-pop local 1
-if-goto 229
-goto 243
-label 229
-push local 1
+pop local 2
+label 346
 push local 2
+if-goto 385
+goto 447
+label 385
+push local 1
 push constant 1
 add
-pop local 2
-push local 3
+pop local 1
+push local 0
 call Main.nextMask 1
-pop local 3
-push local 2
+pop local 0
+push local 1
 push constant 16
 gt
 not
-if-goto 642
+if-goto 696
 push argument 0
-push local 3
+push local 0
 and
 push constant 0
 eq
 not
-if-goto 601
+if-goto 554
 push constant 8000
-push local 2
+push local 1
 add
 push constant 1
 call Memory.poke 2
 pop temp 0
-goto 680
-label 601
+goto 580
+label 554
 push constant 8000
-push local 2
+push local 1
 add
 push constant 0
 call Memory.poke 2
 pop temp 0
-label 680
-goto 508
-label 642
+label 580
+goto 662
+label 696
 push constant 0
-pop local 4
-label 508
-goto 229
-label 243
+pop local 2
+label 662
+goto 346
+label 447
 return
-function Main.nextMask 1
+function Main.nextMask 0
 push argument 0
 push constant 0
 eq
 not
-if-goto 534
+if-goto 525
 return
 push constant 1
-goto 696
-label 534
+goto 596
+label 525
 return
 push argument 0
 push constant 2
 call Math.multiply 2
-label 696
-function Main.fillMemory 3
-if-goto 367
-goto 364
-label 367
+label 596
+function Main.fillMemory 0
+label 263
 push argument 1
 push constant 0
 gt
+if-goto 423
+goto 274
+label 423
 push argument 0
 push argument 2
 call Memory.poke 2
 pop temp 0
-push argument 3
+push argument 1
 push constant 1
 sub
-pop local 3
-push argument 4
+pop argument 1
+push argument 0
 push constant 1
 add
-pop local 4
-goto 367
-label 364
+pop argument 0
+goto 263
+label 274
 return

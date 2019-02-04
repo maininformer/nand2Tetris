@@ -12,24 +12,32 @@ class SymbolTable(object):
         self.subroutine_scope = {} 
         self.subroutine_index = 0
 
-    def define(self, name, type_, kind):
+    def define(self, name, type_, kind, index=None):
         # for compile let:
+        # vars are first declared and then when defined, they are assigned an 
+        # index. Args already have a defined value, so in case we are overwritting
+        # and arg, there is no index changing
         if name in self.subroutine_scope:
-            self.subroutine_scope[name]['index'] = self.subroutine_index
-            self.subroutine_index += 1
+            # if this is a var and its index is not None, then this is a mutation,
+            # do not alter the index
+            if kind != 'arg' and self.subroutine_scope[name]['index'] is None:
+                self.subroutine_scope[name]['index'] = self.subroutine_index
+                self.subroutine_index += 1
         elif name in self.class_scope:
             self.class_scope[name]['index'] = self.class_index
             self.class_index += 1
         elif kind in ('static', 'field'):
             self.class_scope[name] = {'type': type_, 'kind': kind, 'index': None}
         elif kind in ('arg', 'var'):
-            index = None
+            index_ = self.subroutine_index
             if kind =='arg':
                 # only index arguments when they are named, for variables, wait
                 # until they are initialized and not just declared
-                index = self.subroutine_index
+                index_ = index
+            self.subroutine_scope[name] = {'type': type_, 'kind': kind, 'index': index_}
+
+            if kind == 'var':
                 self.subroutine_index += 1
-            self.subroutine_scope[name] = {'type': type_, 'kind': kind, 'index': index}
 
     def var_count(self, kind):
         assert kind in ('static', 'field', 'arg', 'var')

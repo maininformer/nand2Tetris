@@ -171,17 +171,6 @@ class Compiler(object):
             self.format_and_write_line()
             self.advance()
 
-        if self.vm:
-            self.compiled.write(
-                VMWriter.write_function(
-                    '{0}.{1}'.format(self.SYMBOL_TABLE.class_name, self.SYMBOL_TABLE.subroutine_name), 
-                    n_params)
-            )
-
-            # no need to pop the args, the args are already on the stack, and 
-            # the arg address is altered by the Assembler to point to the corret
-            # base
-
         if self.words_exist(['{']):
             self.compileSubroutineBody()
 
@@ -200,7 +189,7 @@ class Compiler(object):
                 raise
             if self.words_exist(['identifier']):
                 name = self.get_xml_value()
-                self.SYMBOL_TABLE.define(name, type_, 'arg')
+                self.SYMBOL_TABLE.define(name, type_, 'arg', n_params)
                 self.format_and_write_line({'category': 'ARG', 'defined':True, 'kind': self.SYMBOL_TABLE.kind_of(name), 'index':self.SYMBOL_TABLE.index_of(name)})
                 self.advance()
             else:
@@ -225,6 +214,19 @@ class Compiler(object):
             raise
         while self.words_exist(['keyword','var']):
             self.compileVarDec()
+
+        # generate code for function definition after counting the number of local vars
+        if self.vm:
+            self.compiled.write(
+                VMWriter.write_function(
+                    '{0}.{1}'.format(self.SYMBOL_TABLE.class_name, self.SYMBOL_TABLE.subroutine_name), 
+                    self.SYMBOL_TABLE.var_count('var')) # local variables
+            )    
+
+            # no need to pop the args, the args are already on the stack, and 
+            # the arg address is altered by the Assembler to point to the corret
+            # base
+
         while  self.words_exist(['if']) or self.words_exist(['let']) or self.words_exist(['while']) or self.words_exist(['do']) or self.words_exist(['return']):
             self.compileStatements()
         if self.words_exist(['}']):
@@ -354,7 +356,7 @@ class Compiler(object):
         if self.words_exist(['identifier']):
             name = self.get_xml_value()
             type_ = 'int' # for lack of a better way to get this; the type will be whatever the expression returns
-            kind = 'var'
+            kind = self.SYMBOL_TABLE.kind_of(name) or 'var'
             # always defined after a let
             self.SYMBOL_TABLE.define(name, type_, kind)
             self.format_and_write_line({'category': 'VAR', 'defined':True, 'kind': self.SYMBOL_TABLE.kind_of(name), 'index': self.SYMBOL_TABLE.index_of(name)})
@@ -382,28 +384,22 @@ class Compiler(object):
         else:
             raise
         if self.vm:
+            # might need extending
+            segment = {'var': 'local', 'arg': 'argument'}
             self.compiled.write(
-                VMWriter.write_pop('local', self.SYMBOL_TABLE.index_of(name))
+                VMWriter.write_pop(segment[kind], self.SYMBOL_TABLE.index_of(name))
             )
         self.close_tag('letStatement')
 
     def compileWhile(self):
         self.open_tag('whileStatement')
+        while_condition_address = str(randint(200, 500))
         while_start_address = str(randint(200, 500))
         while_end_address = str(randint(200, 500))
 
-        # Stack: true or false
-        # if true go to start
-        self.compiled.write(
-            VMWriter.write_if(while_start_address)
-        )
-        # if not true then do this one, go to the end
-        self.compiled.write(
-            VMWriter.write_go_to(while_end_address)
-        )
         # this is the start address 
         self.compiled.write(
-            VMWriter.write_label(while_start_address)
+            VMWriter.write_label(while_condition_address)
         )
         if self.words_exist(['while', 'keyword']):
             self.format_and_write_line()
@@ -421,6 +417,21 @@ class Compiler(object):
             self.advance()
         else:
             raise
+
+        # Stack: true or false
+        # if true go to start
+        self.compiled.write(
+            VMWriter.write_if(while_start_address)
+        )
+        # if not true then do this one, go to the end
+        self.compiled.write(
+            VMWriter.write_go_to(while_end_address)
+        )
+        # this is the start address of the while block
+        self.compiled.write(
+            VMWriter.write_label(while_start_address)
+        )
+
         if self.words_exist(['symbol', '{']):
             self.format_and_write_line()
             self.advance()
@@ -435,7 +446,7 @@ class Compiler(object):
 
         # return to beginning
         self.compiled.write(
-            VMWriter.write_go_to(while_start_address)
+            VMWriter.write_go_to(while_condition_address)
         )
         # this is the end address
         self.compiled.write(
