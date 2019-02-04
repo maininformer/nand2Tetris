@@ -23,7 +23,13 @@ class SymbolTable(object):
         elif kind in ('static', 'field'):
             self.class_scope[name] = {'type': type_, 'kind': kind, 'index': None}
         elif kind in ('arg', 'var'):
-            self.subroutine_scope[name] = {'type': type_, 'kind': kind, 'index': None}
+            index = None
+            if kind =='arg':
+                # only index arguments when they are named, for variables, wait
+                # until they are initialized and not just declared
+                index = self.subroutine_index
+                self.subroutine_index += 1
+            self.subroutine_scope[name] = {'type': type_, 'kind': kind, 'index': index}
 
     def var_count(self, kind):
         assert kind in ('static', 'field', 'arg', 'var')

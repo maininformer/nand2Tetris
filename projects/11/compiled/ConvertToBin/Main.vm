@@ -15,75 +15,87 @@ return
 function Main.convert 1
 push constant 1
 neg
-pop local 0
-<<<<< DONE HERE THIS IS WHILE
->>> HANDLE IF ELSE HERE
-if-goto 275
-goto 221
-label 275
-push local 0
+pop local 1
+if-goto 229
+goto 243
+label 229
 push local 1
+push local 2
 push constant 1
 add
-pop local 1
-push local 2
-call Main.nextMask 1
 pop local 2
-push local 1
+push local 3
+call Main.nextMask 1
+pop local 3
+push local 2
 push constant 16
 gt
-push argument None <<< ERROR
-push local 2
+not
+if-goto 642
+push argument 0
+push local 3
 and
 push constant 0
 eq
+not
+if-goto 601
 push constant 8000
-push local 1
+push local 2
 add
 push constant 1
 call Memory.poke 2
 pop temp 0
+goto 680
+label 601
 push constant 8000
-push local 1
+push local 2
 add
 push constant 0
 call Memory.poke 2
 pop temp 0
+label 680
+goto 508
+label 642
 push constant 0
-pop local 3
-goto 275
-label 221
->>>>> END WHILE
+pop local 4
+label 508
+goto 229
+label 243
 return
 function Main.nextMask 1
-push argument None
+push argument 0
 push constant 0
 eq
+not
+if-goto 534
 return
 push constant 1
+goto 696
+label 534
 return
-push argument None
+push argument 0
 push constant 2
 call Math.multiply 2
+label 696
 function Main.fillMemory 3
-if-goto 255
-goto 494
-label 255
-push argument None
+if-goto 367
+goto 364
+label 367
+push argument 1
 push constant 0
 gt
-push argument None
-push argument None
+push argument 0
+push argument 2
 call Memory.poke 2
 pop temp 0
-push argument 0
+push argument 3
 push constant 1
 sub
-pop local 0
-push argument 1
+pop local 3
+push argument 4
 push constant 1
 add
-pop local 1
-goto 255
-label 494
+pop local 4
+goto 367
+label 364
 return

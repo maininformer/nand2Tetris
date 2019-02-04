@@ -178,6 +178,10 @@ class Compiler(object):
                     n_params)
             )
 
+            # no need to pop the args, the args are already on the stack, and 
+            # the arg address is altered by the Assembler to point to the corret
+            # base
+
         if self.words_exist(['{']):
             self.compileSubroutineBody()
 
@@ -475,6 +479,17 @@ class Compiler(object):
             self.advance()
         else:
             raise
+        # Now the condition result is on the stack
+        # we need to negate it to use it with if-goto else
+        else_block = str(randint(500, 700))
+        exit_address = str(randint(500, 700))
+
+        self.compiled.write(
+            VMWriter.write_arithmetic('~')
+        )
+        self.compiled.write(
+            VMWriter.write_if(else_block)
+        )
         if self.words_exist(['symbol', '{']):
             self.format_and_write_line()
             self.advance()
@@ -486,10 +501,20 @@ class Compiler(object):
             self.advance()
         else:
             raise
+
+        self.compiled.write(
+            VMWriter.write_go_to(exit_address)
+        )
+
         if self.words_exist(['else', 'keyword']):
-            self.here = True
+            self.here = True  # omg what is this hack? i have no recollection
             self.format_and_write_line()
             self.advance()
+
+            self.compiled.write(
+                VMWriter.write_label(else_block)
+            )
+
             if self.words_exist(['symbol', '{']):
                 self.format_and_write_line()
                 self.advance()
@@ -501,6 +526,11 @@ class Compiler(object):
                 self.advance()
             else:
                 raise
+        
+        self.compiled.write(
+            VMWriter.write_label(exit_address)
+        )
+
         self.close_tag('ifStatement')
 
     def compileExpression(self):
